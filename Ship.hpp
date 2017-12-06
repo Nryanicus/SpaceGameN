@@ -8,15 +8,24 @@
 class Ship
 {
 public:
+    // flight state
     Hex position;
     Hex velocity;
     int rotation;
 
-    sf::Sprite sprite;
-
     std::vector<Planetoid*>* planets;
 
-    Ship(Hex pos, sf::Texture* tex, std::vector<Planetoid*>* planets);
+    // landed state
+    bool landed;
+    Planetoid* landed_planetoid;
+    int landed_location;
+
+    // rendering
+    sf::Texture ship_texture;
+    sf::Texture ship_dashed_texture;
+    sf::Sprite sprite;
+
+    Ship(Hex pos, std::vector<Planetoid*>* planets);
     void update();
     void draw(sf::RenderTarget* target);
 

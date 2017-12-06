@@ -1,7 +1,3 @@
-#include <cstdlib>
-#include <string>
-#include <ctime>
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Hex.hpp"
 #include "Planetoid.hpp"
@@ -12,7 +8,9 @@
 
 int main(int argc, char* argv[])
 {   
-    // create the window
+    ////////////////////////////////////////
+    //          SFML boilerplate          //
+    ////////////////////////////////////////
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "HIDE(N)", sf::Style::Default, settings);
@@ -20,27 +18,54 @@ int main(int argc, char* argv[])
 
     sf::View view = window.getDefaultView();
 
-    Background background;
-
-    sf::Font arrow_font;
-    arrow_font.loadFromFile("res/LiberationMono-Regular.ttf");
+    ////////////////////////////////////////
+    //          control variables         //
+    ////////////////////////////////////////
 
     double zoom = 1.0;
+    bool shaders_on = true;
 
-    Planetoid planet1(6, Hex(0, 0));
+    ////////////////////////////////////////
+    //          game logic                //
+    ////////////////////////////////////////
+
+    Background background;
+
+    Planetoid planet1(2, Hex(0, 0));
 
     std::vector<Planetoid*> planets;
     planets.push_back(&planet1);
 
-    sf::Texture ship_tex;
-    ship_tex.loadFromFile("res/ship.png");
-    ship_tex.setSmooth(true);
-    Ship ship(Hex(5,0), &ship_tex, &planets);
+    Ship ship(Hex(5,0), &planets);
 
-    // run the program as long as the window is open
+    ////////////////////////////////////////
+    //          shader & vfx variables    //
+    ////////////////////////////////////////
+
+    sf::Shader gauss_shader;
+    gauss_shader.loadFromFile("shaders/gauss.frag", sf::Shader::Fragment);
+    gauss_shader.setUniform("texture", sf::Shader::CurrentTexture);
+    gauss_shader.setUniform("resolution", sf::Vector2f(window.getSize().x, window.getSize().y));
+    
+    sf::RenderTexture canvas, bg_canvas;
+    canvas.create(window.getSize().x, window.getSize().y);
+    bg_canvas.create(window.getSize().x, window.getSize().y);
+    
+    int gauss_rot = 0;
+    float gauss_mag = 1;
+    sf::Clock clock;
+    float time = 0;
+    float time_uniform = 0;
+    bool no_canvas_clear = false;
+
+    ////////////////////////////////////////
+    //               main loop            //
+    ////////////////////////////////////////
     while (window.isOpen())
     {
-        // Event handling
+        ////////////////////////////////////////
+        //          event handling            //
+        ////////////////////////////////////////
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             {
@@ -62,11 +87,16 @@ int main(int argc, char* argv[])
             {
                 view.zoom(1.1);
                 zoom *= 1.1;
+                no_canvas_clear = true;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
             {
-                view.zoom(0.9);
-                zoom *= 0.9;
+                if (zoom > 1)
+                {
+                    view.zoom(0.9);
+                    zoom *= 0.9;
+                    no_canvas_clear = true;
+                }
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                 window.close();
@@ -88,6 +118,8 @@ int main(int argc, char* argv[])
                         ship.accelerate(1);
                     if (event.key.code == sf::Keyboard::Down)
                         ship.accelerate(-1);
+                    if (event.key.code == sf::Keyboard::Z)
+                        shaders_on = !shaders_on;
                     if (event.key.code == sf::Keyboard::Space)
                     {
                         ship.update();
@@ -95,19 +127,56 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        
-        // Rendering
+        ////////////////////////////////////////
+        //          rendering logic           //
+        ////////////////////////////////////////        
         {
-            // clear the window with black color
-            window.setView(view);
-            window.clear(DarkGrey);
+            gauss_rot +=random_int(-3,3);
+            gauss_mag += ((float)random_int(-100,100))/10000.0f;
+            if (gauss_mag < 0) gauss_mag = 1;
+            if (gauss_mag > 2) gauss_mag = 2;
 
-            background.draw(&window, &arrow_font, zoom);
-            planet1.draw(&window);
-            ship.draw(&window);
+            gauss_shader.setUniform("seed", ((float)random_int(0,100000))/100000.0f);
+            gauss_shader.setUniform("direction", gauss_mag*Vector(1,0).rotate(gauss_rot*DEGREES_TO_RADIANS).to_sfml());
+            gauss_shader.setUniform("time", time_uniform);
+            time = clock.restart().asSeconds();
+            time_uniform += time;
+            if (time_uniform > 31415) // pi*10000, to prevent overflows
+                time_uniform = 0;
+            if (!no_canvas_clear)
+                no_canvas_clear = !random_int(0,3);
+        }
+        ////////////////////////////////////////
+        //            rendering               //
+        ////////////////////////////////////////  
+        {
+            bg_canvas.clear(BG_COLOUR);
+            bg_canvas.setView(view);
+            background.draw(&bg_canvas, zoom);
+            bg_canvas.display();
 
-            // end the current frame
+            if (!no_canvas_clear || !shaders_on)
+                canvas.clear(Transparent);
+            canvas.setView(view);
+            planet1.draw(&canvas);
+            ship.draw(&canvas);
+            canvas.display();
+
+            sf::Sprite bg_sprite(bg_canvas.getTexture());
+            sf::Sprite gauss_sprite(canvas.getTexture());
+
+            if (shaders_on)
+            {
+                window.draw(bg_sprite, &gauss_shader);
+                window.draw(gauss_sprite, &gauss_shader);
+            }
+            else
+            {
+                window.draw(bg_sprite);
+                window.draw(gauss_sprite);
+            }
             window.display();
+            no_canvas_clear = false;
         }
     }
     return 0;

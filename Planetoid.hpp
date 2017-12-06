@@ -10,13 +10,15 @@
 class Planetoid
 {
 private:
-    int size;
     sf::ConvexShape shape;
 public:
+    int size;
     int mass;
     Hex position;
     Planetoid(int size, Hex position);
     void draw(sf::RenderTarget* target);
+
+    int find_landing_location(Hex pos, Hex prev_pos);
 };
 
 #endif

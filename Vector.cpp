@@ -71,7 +71,12 @@ double Vector::angle_between(Vector other)
     Vector v2 = other.normalise();
     return acos(v1.dot(v2)) * RADIANS_TO_DEGREES;
 }
-
+Vector Vector::rotate(double rot)
+{
+    double nx = x*cos(rot) - y*sin(rot);
+    double ny = x*sin(rot) + y*cos(rot);
+    return Vector(nx, ny);
+}
 sf::Vector2f Vector::to_sfml() const
 {
     return sf::Vector2f(x, y);

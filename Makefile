@@ -1,5 +1,5 @@
 CC = g++
-CC_FLAGS = -Og -std=c++11
+CC_FLAGS = -Og -std=c++11 -Wall
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
  
 # File names
@@ -13,7 +13,7 @@ $(EXEC): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC) $(LIBS)
 
 # debug target
-$(DEBUG): CC_FLAGS = -g -O0 -std=c++11
+$(DEBUG): CC_FLAGS = -g -O0 -std=c++11 -Wall
 $(DEBUG): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(DEBUG) $(LIBS)
  

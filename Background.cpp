@@ -2,9 +2,14 @@
 
 Background::Background()
 {
+    hex_texture.loadFromFile("res/hex.png");
+    hex_texture.setSmooth(true);
+    hex_sprite.setTexture(hex_texture);
+    hex_sprite.setOrigin(hex_sprite.getLocalBounds().width/2, hex_sprite.getLocalBounds().height/2);
+    hex_sprite.scale(0.51, 0.51);
 }
 
-void Background::draw(sf::RenderTarget* target, sf::Font* font, double zoom)
+void Background::draw(sf::RenderTarget* target, double zoom)
 {   
     if (zoom > 7) return;
 
@@ -27,19 +32,17 @@ void Background::draw(sf::RenderTarget* target, sf::Font* font, double zoom)
     std::vector<Hex> left_side = top_left.all_hexes_between(bot_left);
     std::vector<Hex> right_side = top_right.all_hexes_between(bot_right);
 
-    sf::Text text("", *font);
-
     for (unsigned int i=0; i<std::min(left_side.size(), right_side.size()); i++)
     {
         std::vector<Hex> row = left_side[i].all_hexes_between(right_side[i]);
         for (Hex h: row)
         {
-            h.draw(target);
-            text.setString(std::to_string(h.q)+", "+std::to_string(h.r));
             Vector v = axial_to_pixel(h.q, h.r);
-            text.setPosition(v.x, v.y);
-            text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
-            // target->draw(text);
+            hex_sprite.setPosition(v.to_sfml());
+            sf::Color bg_col = BG_HEX_COLOUR;
+            bg_col.a = (int) 50*(1-zoom/7);
+            hex_sprite.setColor(bg_col);
+            target->draw(hex_sprite);
         }
     }
 }

@@ -12,6 +12,13 @@ int Hex::distance(Hex other)
           + abs(q + r - other.q - other.r) 
           + abs(r - other.r)) / 2;
 }
+int Hex::magnitude()
+{
+    int x = q;
+    int z = r;
+    int y = -x-z;
+    return std::max(std::max(x, y), z);
+}
 
 Hex Hex::operator+(Hex o)
 {
@@ -57,7 +64,7 @@ bool Hex::operator!=(Hex o)
 void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col, int trans)
 {
     assert (trans >= 0 && trans <= 255);
-    // std::cout << "Warning! Hex.draw deprecated" << std::endl;
+    std::cout << "Warning! Hex.draw deprecated" << std::endl;
 
     sf::ConvexShape shape;
     shape.setPointCount(6);

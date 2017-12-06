@@ -29,6 +29,7 @@ public:
     double dot(Vector other);
     Vector projection(Vector other);
     double angle_between(Vector other);
+    Vector rotate(double rot);
     sf::Vector2f to_sfml() const;
 };
 

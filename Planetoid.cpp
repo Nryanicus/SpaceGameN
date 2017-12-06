@@ -35,8 +35,8 @@ Planetoid::Planetoid(int size, Hex position)
         double y = radius*sin(theta);
         shape.setPoint(k, sf::Vector2f(x, y));
     }
-    shape.setFillColor(Transparent);
-    shape.setOutlineColor(Yellow);
+    shape.setFillColor(BG_COLOUR);
+    shape.setOutlineColor(Grey);
     shape.setOutlineThickness(5);
 
     shape.setPosition(axial_to_pixel(position.q, position.r).to_sfml());

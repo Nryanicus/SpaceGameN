@@ -18,7 +18,7 @@ const sf::Color Transparent = sf::Color(0, 0, 0, 0);
 const sf::Color White = sf::Color(255, 255, 255);
 const sf::Color Brown = sf::Color(139, 69, 19);
 
-const sf::Color BG_COLOUR = Yellow;
+const sf::Color BG_COLOUR = sf::Color(0, 0, 5);
 
 const double RADIANS_TO_DEGREES = 180/pi;
 const double DEGREES_TO_RADIANS = pi/180;
