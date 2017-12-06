@@ -1,6 +1,6 @@
 #include "Hex.hpp"
 
-Hex Hex::from_pixels(float x, float y)
+Hex Hex::from_pixels(double x, double y)
 {
     std::pair<int, int> qr = pixel_to_axial(x, y);
     return Hex(qr.first, qr.second);
@@ -10,7 +10,7 @@ int Hex::distance(Hex other)
 {
     return (abs(q - other.q)
           + abs(q + r - other.q - other.r) 
-          + abs(r - other.r))/2;
+          + abs(r - other.r)) / 2;
 }
 
 Hex Hex::operator+(Hex o)
@@ -63,20 +63,14 @@ void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col, int trans)
     shape.setPointCount(6);
     for (int k=0; k<6; k++)
     {
-        float theta = 2*pi/6*(k+0.5);
-        float x = cos(theta);
-        float y = sin(theta);
+        double theta = 2*pi/6*(k+0.5);
+        double x = HEX_SIZE*cos(theta);
+        double y = HEX_SIZE*sin(theta);
         shape.setPoint(k, sf::Vector2f(x, y));
     }
 
     Vector v = axial_to_pixel(q, r);
     shape.setPosition(v.x, v.y);
-
-    // do culling check
-    sf::FloatRect bounds = shape.getGlobalBounds();
-    sf::FloatRect viewport = sf::FloatRect(target->mapPixelToCoords(sf::Vector2i(0, 0)), sf::Vector2f(target->getSize()));
-    if (! bounds.intersects(viewport))
-        return;
 
     if (trans)
         col.a = trans;
@@ -85,25 +79,30 @@ void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col, int trans)
     else
         shape.setFillColor(Transparent);
     shape.setOutlineColor(col);
-    shape.setOutlineThickness(0.01);
+    shape.setOutlineThickness(1);
     target->draw(shape);
 }
 
 /*
     Get all hexes in a line between this Hex and another
 */
-std::vector<Hex> Hex::all_hexes_between(Hex a)
+std::vector<Hex> Hex::all_hexes_between(Hex o)
 {
-    int d = distance(a);
+    int d = distance(o);
     std::vector<Hex> results;
-    results.reserve(d);
-    for (int i=0; i<d; i++)
+    
+    // add 1e-6 to make line not land on boundaries
+    double x1 = q + 1e-6;
+    double z1 = r + 1e-6;
+    double y1 = -x1-z1 - 2e-6;
+    
+    double x2 = o.q + 1e-6;
+    double z2 = o.r + 1e-6;
+    double y2 = -x2-z2 - 2e-6;
+    for (int i=0; i<=d; i++)
     {
-        float t = 1.0/d*i;
-
-        // x = q, z = r
-        // add 1e-6 to make line not land on boundaries
-        std::pair<int, int> h = round_hex(q + (a.q + 0.0001 - q)*t, r + (a.r - 0.0002 - r)*t);
+        double t = 1.0/d*i;
+        std::pair<int, int> h = round_hex(lerp(x1, x2, t), lerp(y1, y2, t), lerp(z1, z2, t));
         results.push_back(Hex(h.first, h.second));
     }
     return results;
@@ -192,17 +191,22 @@ Hex rotate_left(Hex hex)
 Hex rotate_hex(Hex hex, int dirc)
 {
     if (dirc > 0)
+    {
         while (dirc != 0)
         {
             hex = rotate_right(hex);
             dirc --;
         }
+    }
     else
+    {
         while (dirc != 0)
         {
             hex = rotate_left(hex);
             dirc ++;
         }
+    }
+    return hex;
 }
 
 sf::Vector2f hex_to_sfml_vec(Hex* h)

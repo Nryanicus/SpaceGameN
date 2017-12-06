@@ -4,6 +4,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Hex.hpp"
+#include "Planetoid.hpp"
+#include "Ship.hpp"
 #include "Background.hpp"
 #include "constants.hpp"
 #include "utilities.hpp"
@@ -18,77 +20,95 @@ int main(int argc, char* argv[])
 
     sf::View view = window.getDefaultView();
 
-    window.setView(view);
-
     Background background;
 
     sf::Font arrow_font;
     arrow_font.loadFromFile("res/LiberationMono-Regular.ttf");
 
-    sf::Clock clock;
-    float time = 0;
-
     double zoom = 1.0;
+
+    Planetoid planet1(6, Hex(0, 0));
+
+    std::vector<Planetoid*> planets;
+    planets.push_back(&planet1);
+
+    sf::Texture ship_tex;
+    ship_tex.loadFromFile("res/ship.png");
+    ship_tex.setSmooth(true);
+    Ship ship(Hex(5,0), &ship_tex, &planets);
 
     // run the program as long as the window is open
     while (window.isOpen())
     {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        // Event handling
         {
-            view.move(-1*zoom, 0);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        {
-            view.move(1*zoom, 0);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        {
-            view.move(0, -1*zoom);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        {
-            view.move(0, 1*zoom);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-        {
-            view.zoom(1.1);
-            zoom *= 1.1;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
-        {
-            view.zoom(0.9);
-            zoom *= 0.9;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            window.close();
-
-        // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::KeyPressed)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             {
-                if (event.key.code == sf::Keyboard::Space)
+                view.move(-10*zoom, 0);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            {
+                view.move(10*zoom, 0);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            {
+                view.move(0, -10*zoom);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            {
+                view.move(0, 10*zoom);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+            {
+                view.zoom(1.1);
+                zoom *= 1.1;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+            {
+                view.zoom(0.9);
+                zoom *= 0.9;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                window.close();
+
+            // check all the window's events that were triggered since the last iteration of the loop
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                // "close requested" event: we close the window
+                if (event.type == sf::Event::Closed)
+                    window.close();
+                if (event.type == sf::Event::KeyPressed)
                 {
-                    // ship.update();
+                    if (event.key.code == sf::Keyboard::Left)
+                        ship.rotate(-1);
+                    if (event.key.code == sf::Keyboard::Right)
+                        ship.rotate(1);
+                    if (event.key.code == sf::Keyboard::Up)
+                        ship.accelerate(1);
+                    if (event.key.code == sf::Keyboard::Down)
+                        ship.accelerate(-1);
+                    if (event.key.code == sf::Keyboard::Space)
+                    {
+                        ship.update();
+                    }
                 }
             }
         }
-        // clear the window with black color
-        background.clear_all_hexes();
+        
+        // Rendering
+        {
+            // clear the window with black color
+            window.setView(view);
+            window.clear(DarkGrey);
 
-        window.setView(view);
-        window.clear(DarkGrey);
+            background.draw(&window, &arrow_font, zoom);
+            planet1.draw(&window);
+            ship.draw(&window);
 
-        background.draw(&window, &arrow_font, zoom);
-        // ship.draw(&window, &opts, true);
-
-        // end the current frame
-        window.display();
-        time = clock.restart().asSeconds();
+            // end the current frame
+            window.display();
+        }
     }
     return 0;
 }

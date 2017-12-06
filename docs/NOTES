@@ -1,0 +1,3 @@
+Planets can't follow the same rules as ships with gravity. They will need to be
+"on rails". When a ship leaves a planet have it take on it's parent planet's
+velocity at that time.

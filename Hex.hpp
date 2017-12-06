@@ -8,6 +8,8 @@
 
 class Hex
 {
+private:
+    static sf::Sprite;
 public:
     int q, r;
 
@@ -15,7 +17,7 @@ public:
 
     Hex(int x, int y, int z): Hex(x, z) {}
 
-    static Hex from_pixels(float x, float y);
+    static Hex from_pixels(double x, double y);
     int distance(Hex other);
     Hex operator+(Hex o);
     Hex operator+=(Hex o);
@@ -24,7 +26,8 @@ public:
     Hex operator*(int m);
     Hex operator*=(int m);
     bool operator!=(Hex o);
-    void draw(sf::RenderTarget* target, bool fill=false, sf::Color col=Yellow, int trans=0);
+    void draw(sf::RenderTarget* target, bool fill=false, sf::Color col=sf::Color(255,255,255,50), int trans=0);
+    void static draw_textured(sf::RenderTarget* target);
     std::vector<Hex> all_hexes_between(Hex a);
 };
 
