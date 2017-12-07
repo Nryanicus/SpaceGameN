@@ -4,9 +4,9 @@ Ship::Ship(Hex pos, std::vector<Planetoid*>* planets)
 : position(pos), velocity(Hex(0,0)), rotation(0), planets(planets), landed(false),
   landed_planetoid(NULL)
 {
-    ship_texture.loadFromFile("res/ship.png");
+    ship_texture.loadFromFile("res/sprites/ship.png");
     ship_texture.setSmooth(true);
-    ship_dashed_texture.loadFromFile("res/ship_dashed.png");
+    ship_dashed_texture.loadFromFile("res/sprites/ship_dashed.png");
     ship_dashed_texture.setSmooth(true);
     sprite.setTexture(ship_texture);
     sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
@@ -31,7 +31,6 @@ void Ship::update()
                 landed_location = p->find_landing_location(position, position-velocity);
             }
         }
-        
     }
 
     // check for gravity
@@ -52,7 +51,7 @@ void Ship::update()
 void Ship::draw(sf::RenderTarget* target)
 {
     // draw current position
-    sprite.setColor(Green);
+    sprite.setColor(sf::Color(0, 255, 0, 200));
     sprite.setTexture(ship_texture);
     sprite.setRotation(60*rotation);
     sprite.setPosition(axial_to_pixel(position.q, position.r).to_sfml());

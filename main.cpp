@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include "Bloom.hpp"
+#include "Flicker.hpp"
 #include "Hex.hpp"
 #include "Planetoid.hpp"
 #include "Ship.hpp"
@@ -42,22 +44,13 @@ int main(int argc, char* argv[])
     //          shader & vfx variables    //
     ////////////////////////////////////////
 
-    sf::Shader gauss_shader;
-    gauss_shader.loadFromFile("shaders/gauss.frag", sf::Shader::Fragment);
-    gauss_shader.setUniform("texture", sf::Shader::CurrentTexture);
-    gauss_shader.setUniform("resolution", sf::Vector2f(window.getSize().x, window.getSize().y));
-    
-    sf::RenderTexture canvas, bg_canvas;
-    canvas.create(window.getSize().x, window.getSize().y);
-    bg_canvas.create(window.getSize().x, window.getSize().y);
-    
-    int gauss_rot = 0;
-    float gauss_mag = 1;
-    sf::Clock clock;
-    float time = 0;
-    float time_uniform = 0;
-    bool no_canvas_clear = false;
+    Bloom bloom;
+    Flicker flicker;
 
+    sf::RenderTexture canvas, output_canvas;
+    canvas.create(window.getSize().x, window.getSize().y);
+    output_canvas.create(window.getSize().x, window.getSize().y);
+    
     ////////////////////////////////////////
     //               main loop            //
     ////////////////////////////////////////
@@ -87,7 +80,6 @@ int main(int argc, char* argv[])
             {
                 view.zoom(1.1);
                 zoom *= 1.1;
-                no_canvas_clear = true;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
             {
@@ -95,7 +87,6 @@ int main(int argc, char* argv[])
                 {
                     view.zoom(0.9);
                     zoom *= 0.9;
-                    no_canvas_clear = true;
                 }
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -128,55 +119,27 @@ int main(int argc, char* argv[])
             }
         }
         ////////////////////////////////////////
-        //          rendering logic           //
-        ////////////////////////////////////////        
-        {
-            gauss_rot +=random_int(-3,3);
-            gauss_mag += ((float)random_int(-100,100))/10000.0f;
-            if (gauss_mag < 0) gauss_mag = 1;
-            if (gauss_mag > 2) gauss_mag = 2;
-
-            gauss_shader.setUniform("seed", ((float)random_int(0,100000))/100000.0f);
-            gauss_shader.setUniform("direction", gauss_mag*Vector(1,0).rotate(gauss_rot*DEGREES_TO_RADIANS).to_sfml());
-            gauss_shader.setUniform("time", time_uniform);
-            time = clock.restart().asSeconds();
-            time_uniform += time;
-            if (time_uniform > 31415) // pi*10000, to prevent overflows
-                time_uniform = 0;
-            if (!no_canvas_clear)
-                no_canvas_clear = !random_int(0,3);
-        }
-        ////////////////////////////////////////
         //            rendering               //
         ////////////////////////////////////////  
         {
-            bg_canvas.clear(BG_COLOUR);
-            bg_canvas.setView(view);
-            background.draw(&bg_canvas, zoom);
-            bg_canvas.display();
-
-            if (!no_canvas_clear || !shaders_on)
-                canvas.clear(Transparent);
+            canvas.clear(BG_COLOUR);
             canvas.setView(view);
+            background.draw(&canvas, zoom);
             planet1.draw(&canvas);
             ship.draw(&canvas);
             canvas.display();
 
-            sf::Sprite bg_sprite(bg_canvas.getTexture());
-            sf::Sprite gauss_sprite(canvas.getTexture());
-
             if (shaders_on)
             {
-                window.draw(bg_sprite, &gauss_shader);
-                window.draw(gauss_sprite, &gauss_shader);
+                bloom.apply(canvas, output_canvas);
+                flicker.apply(output_canvas, window);
             }
             else
             {
-                window.draw(bg_sprite);
-                window.draw(gauss_sprite);
+                sf::Sprite sprite(canvas.getTexture());
+                window.draw(sprite);
             }
             window.display();
-            no_canvas_clear = false;
         }
     }
     return 0;

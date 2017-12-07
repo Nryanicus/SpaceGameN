@@ -2,7 +2,7 @@
 
 Background::Background()
 {
-    hex_texture.loadFromFile("res/hex.png");
+    hex_texture.loadFromFile("res/sprites/hex.png");
     hex_texture.setSmooth(true);
     hex_sprite.setTexture(hex_texture);
     hex_sprite.setOrigin(hex_sprite.getLocalBounds().width/2, hex_sprite.getLocalBounds().height/2);

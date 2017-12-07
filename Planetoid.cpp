@@ -46,3 +46,8 @@ void Planetoid::draw(sf::RenderTarget* target)
 {
     target->draw(shape);
 }
+
+int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
+{
+    return 0;
+}
