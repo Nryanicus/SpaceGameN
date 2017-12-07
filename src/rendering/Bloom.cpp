@@ -2,10 +2,10 @@
 
 Bloom::Bloom()
 {
-    brightness_shader.loadFromFile("res/shaders/brightness.frag", sf::Shader::Fragment);
-    blur_shader.loadFromFile("res/shaders/blur.frag", sf::Shader::Fragment);
-    downsample_shader.loadFromFile("res/shaders/downsample.frag", sf::Shader::Fragment);
-    add_shader.loadFromFile("res/shaders/add.frag", sf::Shader::Fragment);
+    brightness_shader.loadFromFile("../res/shaders/brightness.frag", sf::Shader::Fragment);
+    blur_shader.loadFromFile("../res/shaders/blur.frag", sf::Shader::Fragment);
+    downsample_shader.loadFromFile("../res/shaders/downsample.frag", sf::Shader::Fragment);
+    add_shader.loadFromFile("../res/shaders/add.frag", sf::Shader::Fragment);
 }
 
 void Bloom::apply(const sf::RenderTexture& input, sf::RenderTarget& output)

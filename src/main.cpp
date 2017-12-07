@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include "gamelogic/Planetoid.hpp"
 #include "gamelogic/Ship.hpp"
-#include "graphics/Bloom.hpp"
-#include "graphics/Flicker.hpp"
-#include "graphics/Background.hpp"
-#include "utilites/Hex.hpp"
-#include "utilites/constants.hpp"
-#include "utilites/utilities.hpp"
+#include "rendering/Bloom.hpp"
+#include "rendering/Flicker.hpp"
+#include "rendering/Background.hpp"
+#include "utilities/Hex.hpp"
+#include "utilities/constants.hpp"
+#include "utilities/utilities.hpp"
 
 int main(int argc, char* argv[])
 {   

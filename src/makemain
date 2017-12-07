@@ -1,0 +1,6 @@
+# file exists just to delay this foreach
+SUBDIR_OBJECTS = $(foreach dir, $(SUBDIRS), $(wildcard $(dir)/*.o))
+
+# Main target
+all:
+	$(CC) $(OBJECTS) $(SUBDIR_OBJECTS) -o $(EXEC) $(LIBS)

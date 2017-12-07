@@ -4,9 +4,9 @@ Ship::Ship(Hex pos, std::vector<Planetoid*>* planets)
 : position(pos), velocity(Hex(0,0)), rotation(0), planets(planets), landed(false),
   landed_planetoid(NULL)
 {
-    ship_texture.loadFromFile("res/sprites/ship.png");
+    ship_texture.loadFromFile("../res/sprites/ship.png");
     ship_texture.setSmooth(true);
-    ship_dashed_texture.loadFromFile("res/sprites/ship_dashed.png");
+    ship_dashed_texture.loadFromFile("../res/sprites/ship_dashed.png");
     ship_dashed_texture.setSmooth(true);
     sprite.setTexture(ship_texture);
     sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);

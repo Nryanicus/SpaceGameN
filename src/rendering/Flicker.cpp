@@ -3,8 +3,8 @@
 Flicker::Flicker()
 : noise_proportion(0.1), smear_magnitude(1.0), smear_direction(0), elasped_time(0)
 {
-    noise_shader.loadFromFile("res/shaders/noise.frag", sf::Shader::Fragment);
-    smear_shader.loadFromFile("res/shaders/smear.frag", sf::Shader::Fragment);
+    noise_shader.loadFromFile("../res/shaders/noise.frag", sf::Shader::Fragment);
+    smear_shader.loadFromFile("../res/shaders/smear.frag", sf::Shader::Fragment);
 }
 
 void Flicker::apply(const sf::RenderTexture& input, sf::RenderTarget& output)
