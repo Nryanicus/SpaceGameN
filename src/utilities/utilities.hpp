@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <cassert>
 #include <cstdlib>
-#include <iostream>
 #include "Vector.hpp"
 #include "constants.hpp"
 

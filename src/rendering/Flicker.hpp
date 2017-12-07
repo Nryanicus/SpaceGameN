@@ -2,8 +2,8 @@
 #define flicker_hpp
 
 #include <SFML/Graphics.hpp>
-#include "Vector.hpp"
-#include "utilities.hpp"
+#include "utilities/Vector.hpp"
+#include "utilities/utilities.hpp"
 
 class Flicker
 {

@@ -3,9 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Hex.hpp"
-#include "constants.hpp"
-#include "utilities.hpp"
+#include "utilities/Hex.hpp"
+#include "utilities/constants.hpp"
+#include "utilities/utilities.hpp"
 
 class Planetoid
 {

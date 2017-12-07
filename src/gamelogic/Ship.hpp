@@ -2,7 +2,7 @@
 #define ship_hpp
 
 #include <SFML/Graphics.hpp>
-#include "Hex.hpp"
+#include "utilities/Hex.hpp"
 #include "Planetoid.hpp"
 
 class Ship

@@ -3,10 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
-#include <unordered_map>
-#include <iostream>
-#include "Hex.hpp"
-#include "utilities.hpp"
+#include "utilities/Hex.hpp"
+#include "utilities/utilities.hpp"
 
 const sf::Color BG_HEX_COLOUR = sf::Color(255, 255, 0, 50);
 
