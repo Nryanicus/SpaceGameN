@@ -2,7 +2,8 @@
 
 Ship::Ship(Hex pos, std::vector<Planetoid*>* planets)
 : position(pos), velocity(Hex(0,0)), rotation(0), planets(planets), landed(false),
-  landed_planetoid(NULL), landed_location(-1), blink(false), elapsed_time(0)
+  taking_off(false), landed_planetoid(NULL), landed_location(-1), blink(false), 
+  elapsed_time(0)
 {
     ship_texture.loadFromFile("../res/sprites/ship.png");
     ship_texture.setSmooth(true);
@@ -19,14 +20,15 @@ void Ship::update()
     if (landed)
     {
         // skip landing, gravity and crash checks if we're landed and aren't taking off
-        if (velocity == Hex()) 
+        if (velocity == Hex() && !taking_off) 
             return;
         else
         {
-            std::cout << "takeoff!" << std::endl;
+            std::cout << "Takeoff!" << std::endl;
             landed = false;
             landed_location = -1;
             landed_planetoid = NULL;
+            taking_off = false;
         }
     }
     // check for landing
@@ -98,7 +100,7 @@ void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
     target->draw(sprite);
 
     // draw next position
-    if (!blink && velocity != Hex())
+    if (!blink && (velocity != Hex() || taking_off))
     {
         if (debug)
             for (Hex movement_hex: (position+velocity).all_hexes_between(position))
@@ -134,5 +136,8 @@ void Ship::accelerate(int mag)
 {
     elapsed_time = 0;
     blink = false;
-    velocity += rotate_hex(Hex(1, 0), rotation)*mag;
+    if (landed && !taking_off) 
+        taking_off = true;
+    else
+        velocity += rotate_hex(Hex(1, 0), rotation)*mag;
 }

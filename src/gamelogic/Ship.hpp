@@ -16,7 +16,7 @@ public:
     std::vector<Planetoid*>* planets;
 
     // landed state
-    bool landed;
+    bool landed, taking_off;
     Planetoid* landed_planetoid;
     int landed_location;
 
