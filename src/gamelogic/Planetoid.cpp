@@ -1,7 +1,8 @@
 #include "Planetoid.hpp"
 
 Planetoid::Planetoid(int size, Hex position)
-: size(size), position(position)
+: gravity_wave_radius(0), 
+  size(size), position(position)
 {
     int num_sides = 6*size;
     if (size == 1) // asteroid/moon
@@ -35,28 +36,115 @@ Planetoid::Planetoid(int size, Hex position)
     mass = 2*size + 2*(size-1);
     radius *= HEX_SIZE;
     shape.setPointCount(num_sides);
-    for (int k=0; k<num_sides; k++)
+    for (int i=0; i<num_sides; i++)
     {
-        double theta = 2*pi/num_sides*(k+0.5);
+        double theta = 2*pi/num_sides*(i+0.5);
         double x = radius*cos(theta);
         double y = radius*sin(theta);
-        shape.setPoint(k, sf::Vector2f(x, y));
+        shape.setPoint(i, sf::Vector2f(x, y));
     }
     shape.setFillColor(Transparent);
     shape.setOutlineColor(Grey);
-    shape.setOutlineThickness(5);
+    shape.setOutlineThickness(10);
 
     shape.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
+
+    //////////////////////////////////////
+    // gravity
+    //////////////////////////////////////
+
+    for(int i=size; i < mass; i++)
+    {
+        sf::ConvexShape gravity_shape;
+        gravity_shape.setPointCount(6);
+        for (int j=0; j<6; j++)
+        {
+            double theta = 2*pi/6*j;
+            double x = SQRT3*HEX_SIZE*i*cos(theta);
+            double y = SQRT3*HEX_SIZE*i*sin(theta);
+            gravity_shape.setPoint(j, sf::Vector2f(x, y));
+        }
+        gravity_shape.setFillColor(Transparent);
+        sf::Color col = gravity_colour;
+        col.a = 200 + 55.0*(1.0 - ((float(i)/(float)mass)));
+
+        gravity_shape.setOutlineColor(col);
+        gravity_shape.setOutlineThickness(2*i);
+
+        gravity_shape.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
+        gravity_shapes.push_back(gravity_shape);
+    }
+
+    gravity_wave.setPointCount(6);
+    gravity_wave_radius = mass-1;
+    for (int j=0; j<6; j++)
+    {
+        double theta = 2*pi/6*j;
+        double x = SQRT3*HEX_SIZE*cos(theta);
+        double y = SQRT3*HEX_SIZE*sin(theta);
+        gravity_wave.setPoint(j, sf::Vector2f(x, y));
+    }
+    gravity_wave.setFillColor(Transparent);
+    gravity_wave.setOutlineThickness(1);
+
+    gravity_wave.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
+
+    font.loadFromFile("../res/fonts/LiberationMono-Regular.ttf");
 }
 
-void Planetoid::draw(sf::RenderTarget* target, bool debug)
+void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool debug)
 {
+    if (gravity)
+    {
+        // draw rings
+        for (unsigned int i=0; i<gravity_shapes.size(); i++)
+            target->draw(gravity_shapes[i]);
+
+        sf::Text text("", font);
+        text.setFillColor(gravity_wave_colour);
+        sf::CircleShape circle;
+        circle.setFillColor(BG_COLOUR);
+        // draw numbers
+        for (int i=size; i<mass; i++)
+            for (int j=0; j<6; j++)
+            {
+                double theta = 2*pi/6*j;
+                double x = SQRT3*HEX_SIZE*i*cos(theta);
+                double y = SQRT3*HEX_SIZE*i*sin(theta);
+
+                Vector v = Vector(x, y) + axial_to_pixel(position.q, position.r);
+                text.setString(std::to_string(mass - i));
+                text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+                text.setPosition(v.to_sfml());
+                
+                circle.setRadius(50);
+                circle.setOrigin(circle.getLocalBounds().width/2, circle.getLocalBounds().height/2);
+                circle.setPosition(v.to_sfml());
+                target->draw(circle);
+                target->draw(text);
+            }
+
+        // draw gravity wave
+        sf::Color col = gravity_wave_colour;
+        col.a = 55 + 200.0*(1.0 - (gravity_wave_radius/(float)mass));
+        gravity_wave.setOutlineColor(col);
+        gravity_wave.setScale(gravity_wave_radius, gravity_wave_radius);
+        gravity_wave.setOutlineThickness(pow(1.3, (mass - gravity_wave_radius)));
+        target->draw(gravity_wave);
+
+        gravity_wave_radius -= dt * pow(1.2, ((float)mass) - gravity_wave_radius);
+
+        if ((gravity_wave_radius < 0.5) ||
+            (size > 1 && gravity_wave_radius < size))
+             gravity_wave_radius = mass-1;
+    }
+
     if (debug)
     {
         for (Hex h: collision)
-            (h+position).draw(target, true, sf::Color(255,0,0,50));
+            (h+position).draw(target, true, sf::Color(255,20,20,50));
         for (Hex h: surface)
-            (h+position).draw(target, false, Blue);
+            (h+position).draw(target, false, sf::Color(20,20,255,200));
     }
     target->draw(shape);
 }

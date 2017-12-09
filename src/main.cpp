@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
     bool shaders_on = false;
     bool debug = false;
     bool hex_nums = false;
+    bool draw_gravity = false;
 
     ////////////////////////////////////////
     //          game logic                //
@@ -38,17 +39,17 @@ int main(int argc, char* argv[])
     Planetoid planet1(1, Hex(0, 0));
     Planetoid planet2(2, Hex(10, 0));
     Planetoid planet3(3, Hex(25, 0));
-    // Planetoid planet4(4, Hex(20, 0));
-    // Planetoid planet5(5, Hex(32, 0));
-    // Planetoid planet6(6, Hex(45, 0));
+    Planetoid planet4(4, Hex(20, -20));
+    Planetoid planet5(5, Hex(-32, 32));
+    Planetoid planet6(6, Hex(-30, -30));
 
     std::vector<Planetoid*> planets;
     planets.push_back(&planet1);
     planets.push_back(&planet2);
     planets.push_back(&planet3);
-    // planets.push_back(&planet4);
-    // planets.push_back(&planet5);
-    // planets.push_back(&planet6);
+    planets.push_back(&planet4);
+    planets.push_back(&planet5);
+    planets.push_back(&planet6);
 
     Ship ship(Hex(5,0), &planets);
 
@@ -134,6 +135,8 @@ int main(int argc, char* argv[])
                         ship.update();
                     if (event.key.code == sf::Keyboard::Q)
                         ship.velocity *= 0;
+                    if (event.key.code == sf::Keyboard::V)
+                        draw_gravity = !draw_gravity;
                 }
             }
         }
@@ -145,7 +148,7 @@ int main(int argc, char* argv[])
             canvas.setView(view);
             background.draw(&canvas, zoom, hex_nums);
             for (Planetoid* p: planets)
-                p->draw(&canvas, debug);
+                p->draw(&canvas, dt, draw_gravity, debug);
             ship.draw(&canvas, dt, debug);
             canvas.display();
 
