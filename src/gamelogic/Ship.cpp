@@ -18,32 +18,36 @@ void Ship::update()
     position += velocity;
     if (landed)
     {
-        landed = false;
-        landed_location = -1;
-        landed_planetoid = NULL;
-        sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
-        if (velocity == Hex()) return;
-    }
-
-    // check for landing
-    for (Planetoid* p : *planets)
-    {
-        if (position.distance(p->position) <= p->size && velocity.magnitude()<=1)
+        // skip landing, gravity and crash checks if we're landed and aren't taking off
+        if (velocity == Hex()) 
+            return;
+        else
         {
-            landed_location = p->find_landing_location(position, position-velocity);
-            if (landed_location != -1)
-            {
-                landed = true;
-                landed_planetoid = p;
-                std::cout << "Landed!" << std::endl;
-                velocity = Hex();
-
-                // set drawing parameters
-                sprite.setOrigin(0, sprite.getLocalBounds().height/2);
-                return;
-            }
+            std::cout << "takeoff!" << std::endl;
+            landed = false;
+            landed_location = -1;
+            landed_planetoid = NULL;
         }
     }
+    // check for landing
+    else
+        for (Planetoid* p : *planets)
+        {
+            if (position.distance(p->position) <= p->size && velocity.magnitude()<=1)
+            {
+                Hex h;
+                landed_location = p->find_landing_location(position, position-velocity, &h);
+                if (landed_location != -1)
+                {
+                    landed = true;
+                    landed_planetoid = p;
+                    std::cout << "Landed!" << std::endl;
+                    velocity = Hex();
+                    position = h;
+                    return;
+                }
+            }
+        }
 
     // check for crash, scanning all hexes that were moved through
     for (Planetoid* p : *planets)
@@ -76,11 +80,13 @@ void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
     {
         Vector p;
         double theta = landed_planetoid->get_landing_position_angle(landed_location, &p);
-        rot = theta*RADIANS_TO_DEGREES;
+        rot = theta;
         pos = p.to_sfml();
+        sprite.setOrigin(0, sprite.getLocalBounds().height/2);
     }
     else
     {
+        sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
         rot = 60*rotation;
         pos = axial_to_pixel(position.q, position.r).to_sfml();
     }
@@ -91,13 +97,13 @@ void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
     sprite.setPosition(pos);
     target->draw(sprite);
 
-
     // draw next position
     if (!blink && velocity != Hex())
     {
         if (debug)
             for (Hex movement_hex: (position+velocity).all_hexes_between(position))
                 movement_hex.draw(target, true, sf::Color(50, 255, 50, 10));
+        sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
         sprite.setColor(sf::Color(50, 255, 50, 100));
         sprite.setRotation(60*rotation);
         sprite.setTexture(ship_dashed_texture);

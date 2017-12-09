@@ -132,6 +132,8 @@ int main(int argc, char* argv[])
                         shaders_on = !shaders_on;
                     if (event.key.code == sf::Keyboard::Space)
                         ship.update();
+                    if (event.key.code == sf::Keyboard::Q)
+                        ship.velocity *= 0;
                 }
             }
         }

@@ -61,29 +61,50 @@ void Planetoid::draw(sf::RenderTarget* target, bool debug)
     target->draw(shape);
 }
 
-int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
+int Planetoid::find_landing_location(Hex pos, Hex prev_pos, Hex* p)
 {
-    // situation one, we were in space now we're on a surface hex
-    if (size > 1)
+    if (pos.distance(prev_pos) > 1) return -1;
+    // if the previous pos was on a surface hex we won't land by moving into
+    // another (we're in orbit)
+    if (size != 1)
+    {
+        // situation one, we were in space now we're on a surface hex
         for (unsigned int i=0; i<surface.size(); i++)
             if ((surface[i] + position) == pos)
+            {
+                *p = pos;
                 return i;
+            }
+    }
+
     // situation two, we were previously on a surface hex
     // and have moved into the planet
+    if (std::find(collision.begin(), collision.end(), pos) == collision.end())
+        return -1;
     for (unsigned int i=0; i<surface.size(); i++)
         if ((surface[i] + position) == prev_pos)
+        {
+            *p = prev_pos;
             return i;
-    
+        }
+
     return -1;
 }
 
 double Planetoid::get_landing_position_angle(int landing_location, Vector* p)
 {
-    double theta1 = 2*pi/(6*size)*(landing_location-1+0.5);
+    double theta1;
+    if (landing_location != 0)
+        theta1 = 2*pi/(6*size)*(landing_location-1+0.5);
+    else
+        theta1 = 2*pi/(6*size)*(size*6-1+0.5);
     double theta2 = 2*pi/(6*size)*(landing_location+0.5);
     Vector p1 = radius*Vector(cos(theta1), sin(theta1));
     Vector p2 = radius*Vector(cos(theta2), sin(theta2));
 
-    (*p) = (p1+p2)/2 + axial_to_pixel(position.q, position.r);
-    return p->angle_between(Vector(1,0))+pi;
+    (*p) = (p1+p2)/2;
+    double landing_angle = std::atan2(p->y, p->x)*RADIANS_TO_DEGREES; 
+    (*p) += axial_to_pixel(position.q, position.r);
+
+    return landing_angle;
 }

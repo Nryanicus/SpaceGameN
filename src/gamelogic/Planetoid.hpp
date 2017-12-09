@@ -24,9 +24,8 @@ public:
     Planetoid(int size, Hex position);
     void draw(sf::RenderTarget* target, bool debug=false);
 
-    int find_landing_location(Hex pos, Hex prev_pos);
+    int find_landing_location(Hex pos, Hex prev_pos, Hex* h);
     double get_landing_position_angle(int landing_location, Vector* v);
 };
 
 #endif
-

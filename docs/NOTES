@@ -7,3 +7,10 @@ rotation 0 is facing right
 should I do a like NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards
 
 gravity waves - hex rings moving towards planets. Move faster for higher gravity
+
+takeoff - have larger planets cost more fuel to take off
+    special velocity code for moving from planetside to space but not moving hex,
+    have future pos be another Ship object for cleaness
+
+UI console, to report events/numbers to make game rules more transparent without
+having to make a good UI
