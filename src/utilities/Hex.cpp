@@ -61,10 +61,9 @@ bool Hex::operator!=(Hex o)
     return !(q == o.q && r == o.r);
 }
 
-void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col, int trans)
+void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col)
 {
-    assert (trans >= 0 && trans <= 255);
-    std::cout << "Warning! Hex.draw deprecated" << std::endl;
+    // std::cout << "Warning! Hex.draw deprecated" << std::endl;
 
     sf::ConvexShape shape;
     shape.setPointCount(6);
@@ -79,8 +78,6 @@ void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col, int trans)
     Vector v = axial_to_pixel(q, r);
     shape.setPosition(v.x, v.y);
 
-    if (trans)
-        col.a = trans;
     if (fill)
         shape.setFillColor(col);
     else
@@ -126,9 +123,42 @@ Hex operator*(int m, Hex h)
     return h*m;
 }
 
+std::vector<Hex> spiral_hex_ring(Hex centre, int radius)
+{
+    assert(radius >= 0 && "invalid radius argument to spiral_hex_ring");
+    std::vector<Hex> hexes;
+    for (int i=0; i<=radius; i++)
+    {
+        std::vector<Hex> ring = hex_ring(centre, i);
+        hexes.insert(hexes.end(), ring.begin(), ring.end());
+    }
+    return hexes;
+}
+
+std::vector<Hex> hex_ring(Hex centre, int radius)
+{
+    assert(radius >= 0 && "invalid radius argument to hex_ring");
+    std::vector<Hex> hexes;
+    if (radius == 0)
+    {
+        hexes.push_back(centre);
+        return hexes;
+    }
+
+    // has the hex cardinal directions
+    Hex h = Hex(1, 0) * radius;
+    for (int i=0; i<6; i++)
+        for (int j=0; j<radius; j++)
+        {
+            hexes.push_back(h);
+            h += index_to_dirc(i+2); // +2 so we have a nice ring starting from rightmost hex
+        }
+    return hexes;
+}
+
 Hex index_to_dirc(int i)
 {
-    i++; i=i%6;
+    i=i%6;
     if (i == 0)
         return Hex(1, 0);
     if (i == 1)

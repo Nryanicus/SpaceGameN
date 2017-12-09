@@ -55,7 +55,7 @@ void Bloom::blur_multipass(RenderTextureArray& renderTextures)
 {
     sf::Vector2u textureSize = renderTextures[0].getSize();
 
-    for (std::size_t count = 0; count < 2; ++count)
+    for (std::size_t count = 0; count < GAUSS_PASSES; ++count)
     {
         blur(renderTextures[0], renderTextures[1], sf::Vector2f(0.f, 1.f / textureSize.y));
         blur(renderTextures[1], renderTextures[0], sf::Vector2f(1.f / textureSize.x, 0.f));

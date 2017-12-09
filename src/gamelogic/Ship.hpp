@@ -24,10 +24,12 @@ public:
     sf::Texture ship_texture;
     sf::Texture ship_dashed_texture;
     sf::Sprite sprite;
+    bool blink;
+    double elapsed_time;
 
     Ship(Hex pos, std::vector<Planetoid*>* planets);
     void update();
-    void draw(sf::RenderTarget* target);
+    void draw(sf::RenderTarget* target, double dt, bool debug=false);
 
     void rotate(int dirc);
     void accelerate(int mag);

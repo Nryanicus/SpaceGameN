@@ -32,6 +32,8 @@ const double HEX_WIDTH = SQRT3*HEX_HEIGHT/2;
 const int WIDTH = 1920;
 const int HEIGHT = 1080;
 
+const int GAUSS_PASSES = 1;
+
 extern std::default_random_engine RandomGenerator;
 
 #endif

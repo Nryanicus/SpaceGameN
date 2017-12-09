@@ -11,10 +11,6 @@ SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 SUBDIRS = utilities rendering gamelogic
 
-define GET_SUBDIR_OBJECTS
-SUBDIR_OBJECTS = $(foreach dir, $(SUBDIRS), $(wildcard $(dir)/*.o))
-endef
-
 all: $(EXEC)
 
 # fake targets
@@ -22,7 +18,7 @@ all: $(EXEC)
 
 # Main target
 $(EXEC): subdirs $(OBJECTS)
-	$(MAKE) -f makemain
+	$(MAKE) -f Makemain
 
 # subdirectories
 subdirs: $(SUBDIRS)
@@ -46,7 +42,7 @@ $(DEBUG): $(EXEC)
 SUBCLEAN = $(addsuffix .clean,$(SUBDIRS))
 
 clean: $(SUBCLEAN)
-	rm -f $(EXEC) $(DEBUG) $(OBJECTS) vgcore.*
+	rm -f $(EXEC) $(DEBUG) $(OBJECTS) vgcore.* *.d
 
 $(SUBCLEAN): %.clean:
 		$(MAKE) -C $* clean

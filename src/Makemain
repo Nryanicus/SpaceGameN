@@ -1,4 +1,5 @@
-# file exists just to delay this foreach
+# file exists just to delay this foreach until after Makefile has generated the
+# objects
 SUBDIR_OBJECTS = $(foreach dir, $(SUBDIRS), $(wildcard $(dir)/*.o))
 
 # Main target

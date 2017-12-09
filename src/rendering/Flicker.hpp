@@ -16,7 +16,9 @@ private:
     void prepare_textures(sf::Vector2u size);
 
     void smear(const sf::RenderTexture& input, sf::RenderTexture& output);
+    void aberrate(const sf::RenderTexture& input, sf::RenderTexture& output);
     void noise(const sf::RenderTexture& input, sf::RenderTarget& target);
+    void add(const sf::RenderTexture& source, const sf::RenderTexture& bloom, sf::RenderTarget& target);
 
     static void apply_shader(const sf::Shader& shader, sf::RenderTarget& output);
 
@@ -24,9 +26,10 @@ public:
     Flicker();
     void apply(const sf::RenderTexture& input, sf::RenderTarget& output);
 
-    sf::Shader noise_shader, smear_shader;
+    sf::Shader noise_shader, smear_shader, abberation_shader, add_shader;
 
     sf::RenderTexture working_texture;
+    sf::RenderTexture working_texture2;
 };
 
 #endif

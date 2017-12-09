@@ -33,6 +33,8 @@ public:
     sf::Vector2f to_sfml() const;
 };
 
+Vector operator*(double m, Vector v);
+
 std::ostream& operator<<(std::ostream& os, const Vector& v);
 
 #endif

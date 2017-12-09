@@ -5,6 +5,8 @@ Flicker::Flicker()
 {
     noise_shader.loadFromFile("../res/shaders/noise.frag", sf::Shader::Fragment);
     smear_shader.loadFromFile("../res/shaders/smear.frag", sf::Shader::Fragment);
+    abberation_shader.loadFromFile("../res/shaders/chromatic_aberration.frag", sf::Shader::Fragment);
+    add_shader.loadFromFile("../res/shaders/add.frag", sf::Shader::Fragment);
 }
 
 void Flicker::apply(const sf::RenderTexture& input, sf::RenderTarget& output)
@@ -14,6 +16,9 @@ void Flicker::apply(const sf::RenderTexture& input, sf::RenderTarget& output)
     prepare_textures(input.getSize());
 
     smear(input, working_texture);
+    aberrate(working_texture, working_texture2);
+    add(input, working_texture2, working_texture);
+    working_texture.display();
     noise(working_texture, output);
 }
 
@@ -23,8 +28,11 @@ void Flicker::prepare_textures(sf::Vector2u size)
     {
         noise_shader.setUniform("resolution", sf::Vector2f(size.x, size.y));
         smear_shader.setUniform("resolution", sf::Vector2f(size.x, size.y));
+        abberation_shader.setUniform("resolution", sf::Vector2f(size.x, size.y));
         working_texture.create(size.x, size.y);
         working_texture.setSmooth(true);
+        working_texture2.create(size.x, size.y);
+        working_texture2.setSmooth(true);
     }
 }
 
@@ -37,9 +45,26 @@ void Flicker::smear(const sf::RenderTexture& input, sf::RenderTexture& output)
     if (smear_magnitude > 2) smear_magnitude = 2;
 
     smear_shader.setUniform("source", input.getTexture());
-    smear_shader.setUniform("direction", smear_magnitude*Vector(1,0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
+    smear_shader.setUniform("direction", 2*smear_magnitude*Vector(1,0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
     apply_shader(smear_shader, output);
     output.display();
+}
+
+void Flicker::aberrate(const sf::RenderTexture& input, sf::RenderTexture& output)
+{
+    abberation_shader.setUniform("source", input.getTexture());
+    abberation_shader.setUniform("bOffset", smear_magnitude*Vector(-0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
+    abberation_shader.setUniform("rOffset", smear_magnitude*Vector(0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
+    abberation_shader.setUniform("gOffset", smear_magnitude*Vector(0.001,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
+    apply_shader(abberation_shader, output);
+    output.display();
+}
+
+void Flicker::add(const sf::RenderTexture& source, const sf::RenderTexture& bloom, sf::RenderTarget& output)
+{
+    add_shader.setUniform("source", source.getTexture());
+    add_shader.setUniform("bloom", bloom.getTexture());
+    apply_shader(add_shader, output);
 }
 
 void Flicker::noise(const sf::RenderTexture& input, sf::RenderTarget& output)

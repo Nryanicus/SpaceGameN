@@ -82,6 +82,11 @@ sf::Vector2f Vector::to_sfml() const
     return sf::Vector2f(x, y);
 }
 
+Vector operator*(double m, Vector v)
+{
+    return v*m;
+}
+
 std::ostream& operator<<(std::ostream& os, const Vector& v)
 {
     os << "V: " << v.x << ", " << v.y;

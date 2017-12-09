@@ -25,7 +25,7 @@ public:
     Hex operator*(int m);
     Hex operator*=(int m);
     bool operator!=(Hex o);
-    void draw(sf::RenderTarget* target, bool fill=false, sf::Color col=sf::Color(255,255,255,50), int trans=0);
+    void draw(sf::RenderTarget* target, bool fill=false, sf::Color col=sf::Color(255,255,255,50));
     std::vector<Hex> all_hexes_between(Hex a);
 };
 
@@ -34,6 +34,9 @@ Hex operator*(int m, Hex h);
 Hex index_to_dirc(int i);
 
 int dirc_to_index(Hex h);
+
+std::vector<Hex> spiral_hex_ring(Hex centre, int radius);
+std::vector<Hex> hex_ring(Hex h, int d);
 
 std::ostream& operator<<(std::ostream& os, const Hex& h);
 

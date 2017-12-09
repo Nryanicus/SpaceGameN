@@ -2,6 +2,7 @@
 #define bloom_hpp
 
 #include <SFML/Graphics.hpp>
+#include "utilities/constants.hpp"
 
 class Bloom
 {

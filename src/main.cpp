@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     //          SFML boilerplate          //
     ////////////////////////////////////////
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 8;
+    settings.antialiasingLevel = 4;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "HIDE(N)", sf::Style::Default, settings);
     window.setFramerateLimit(60);
 
@@ -25,7 +25,9 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////
 
     double zoom = 1.0;
-    bool shaders_on = true;
+    bool shaders_on = false;
+    bool debug = false;
+    bool hex_nums = false;
 
     ////////////////////////////////////////
     //          game logic                //
@@ -33,12 +35,25 @@ int main(int argc, char* argv[])
 
     Background background;
 
-    Planetoid planet1(2, Hex(0, 0));
+    Planetoid planet1(1, Hex(0, 0));
+    Planetoid planet2(2, Hex(10, 0));
+    Planetoid planet3(3, Hex(25, 0));
+    // Planetoid planet4(4, Hex(20, 0));
+    // Planetoid planet5(5, Hex(32, 0));
+    // Planetoid planet6(6, Hex(45, 0));
 
     std::vector<Planetoid*> planets;
     planets.push_back(&planet1);
+    planets.push_back(&planet2);
+    planets.push_back(&planet3);
+    // planets.push_back(&planet4);
+    // planets.push_back(&planet5);
+    // planets.push_back(&planet6);
 
     Ship ship(Hex(5,0), &planets);
+
+    sf::Clock clock;
+    double dt = 0;
 
     ////////////////////////////////////////
     //          shader & vfx variables    //
@@ -109,12 +124,14 @@ int main(int argc, char* argv[])
                         ship.accelerate(1);
                     if (event.key.code == sf::Keyboard::Down)
                         ship.accelerate(-1);
+                    if (event.key.code == sf::Keyboard::C)
+                        hex_nums = !hex_nums;
+                    if (event.key.code == sf::Keyboard::X)
+                        debug = !debug;
                     if (event.key.code == sf::Keyboard::Z)
                         shaders_on = !shaders_on;
                     if (event.key.code == sf::Keyboard::Space)
-                    {
                         ship.update();
-                    }
                 }
             }
         }
@@ -124,9 +141,10 @@ int main(int argc, char* argv[])
         {
             canvas.clear(BG_COLOUR);
             canvas.setView(view);
-            background.draw(&canvas, zoom);
-            planet1.draw(&canvas);
-            ship.draw(&canvas);
+            background.draw(&canvas, zoom, hex_nums);
+            for (Planetoid* p: planets)
+                p->draw(&canvas, debug);
+            ship.draw(&canvas, dt, debug);
             canvas.display();
 
             if (shaders_on)
@@ -141,6 +159,8 @@ int main(int argc, char* argv[])
             }
             window.display();
         }
+
+        dt = clock.restart().asSeconds();
     }
     return 0;
 }

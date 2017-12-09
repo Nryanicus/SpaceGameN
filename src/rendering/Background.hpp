@@ -13,9 +13,10 @@ class Background
 private:
     sf::Texture hex_texture;
     sf::Sprite hex_sprite;
+    sf::Font font;
 public:
     Background();
-    void draw(sf::RenderTarget* target, double zoom);
+    void draw(sf::RenderTarget* target, double zoom, bool hex_nums=false);
 };
 
 #endif
