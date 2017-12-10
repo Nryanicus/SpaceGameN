@@ -1,12 +1,9 @@
 #include "Flicker.hpp"
 
 Flicker::Flicker()
-: noise_proportion(0.1), smear_magnitude(1.0), smear_direction(0), elasped_time(0)
+: PostEffect(),
+  noise_proportion(0.05), smear_magnitude(1.0), smear_direction(0), elasped_time(0)
 {
-    noise_shader.loadFromFile("../res/shaders/noise.frag", sf::Shader::Fragment);
-    smear_shader.loadFromFile("../res/shaders/smear.frag", sf::Shader::Fragment);
-    abberation_shader.loadFromFile("../res/shaders/chromatic_aberration.frag", sf::Shader::Fragment);
-    add_shader.loadFromFile("../res/shaders/add.frag", sf::Shader::Fragment);
 }
 
 void Flicker::apply(const sf::RenderTexture& input, sf::RenderTarget& output)
@@ -15,11 +12,32 @@ void Flicker::apply(const sf::RenderTexture& input, sf::RenderTarget& output)
     if (elasped_time > 31415) elasped_time = 0;
     prepare_textures(input.getSize());
 
-    smear(input, working_texture);
-    aberrate(working_texture, working_texture2);
+
+    // Smear
+    smear_direction += random_int(-10,10);
+    smear_magnitude += (sin(elasped_time*((float)random_int(-100,100))/1000.0f)/2);
+
+    if (smear_magnitude < 0) smear_magnitude = 0;
+    if (smear_magnitude > 2) smear_magnitude = 2;
+    sf::Vector2f smear_vector = (2*smear_magnitude*Vector(1,0).rotate(smear_direction*DEGREES_TO_RADIANS)).to_sfml();
+    smear(input, working_texture, smear_vector);
+
+    // Aberrate
+    sf::Vector2f r_off = smear_magnitude*Vector(0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml();
+    sf::Vector2f g_off = smear_magnitude*Vector(0.001,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml();
+    sf::Vector2f b_off = smear_magnitude*Vector(-0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml();
+    aberrate(working_texture, working_texture2, r_off, g_off, b_off);
     add(input, working_texture2, working_texture);
-    working_texture.display();
-    noise(working_texture, output);
+
+    // noise
+    noise_proportion += ((float)random_int(-100000, 100000))/100000000.0f;
+    if (noise_proportion < 0) noise_proportion = 0;
+    if (noise_proportion > 0.1) noise_proportion = 0.1;
+    float noise_uniform = noise_proportion + smear_magnitude/40;
+
+    noise(working_texture, working_texture2, noise_uniform);
+
+    apply_to_target(working_texture2, output);
 }
 
 void Flicker::prepare_textures(sf::Vector2u size)
@@ -34,63 +52,4 @@ void Flicker::prepare_textures(sf::Vector2u size)
         working_texture2.create(size.x, size.y);
         working_texture2.setSmooth(true);
     }
-}
-
-void Flicker::smear(const sf::RenderTexture& input, sf::RenderTexture& output)
-{
-    smear_direction += random_int(-10,10);
-    smear_magnitude += (sin(elasped_time*((float)random_int(-100,100))/1000.0f)/2);
-
-    if (smear_magnitude < 0) smear_magnitude = 0;
-    if (smear_magnitude > 2) smear_magnitude = 2;
-
-    smear_shader.setUniform("source", input.getTexture());
-    smear_shader.setUniform("direction", 2*smear_magnitude*Vector(1,0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
-    apply_shader(smear_shader, output);
-    output.display();
-}
-
-void Flicker::aberrate(const sf::RenderTexture& input, sf::RenderTexture& output)
-{
-    abberation_shader.setUniform("source", input.getTexture());
-    abberation_shader.setUniform("bOffset", smear_magnitude*Vector(-0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
-    abberation_shader.setUniform("rOffset", smear_magnitude*Vector(0.002,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
-    abberation_shader.setUniform("gOffset", smear_magnitude*Vector(0.001,0.0).rotate(smear_direction*DEGREES_TO_RADIANS).to_sfml());
-    apply_shader(abberation_shader, output);
-    output.display();
-}
-
-void Flicker::add(const sf::RenderTexture& source, const sf::RenderTexture& bloom, sf::RenderTarget& output)
-{
-    add_shader.setUniform("source", source.getTexture());
-    add_shader.setUniform("bloom", bloom.getTexture());
-    apply_shader(add_shader, output);
-}
-
-void Flicker::noise(const sf::RenderTexture& input, sf::RenderTarget& output)
-{
-    noise_shader.setUniform("source", input.getTexture());
-    noise_shader.setUniform("rand", ((float)random_int(0,100000))/100000.0f);
-    noise_proportion += ((float)random_int(-100000, 100000))/1000000000.0f;
-    if (noise_proportion < 0) noise_proportion = 0;
-    if (noise_proportion > 0.05) noise_proportion = 0.05;
-    noise_shader.setUniform("noiseProportion", noise_proportion);
-    apply_shader(noise_shader, output);
-}
-
-void Flicker::apply_shader(const sf::Shader& shader, sf::RenderTarget& output)
-{
-    sf::Vector2f outputSize = static_cast<sf::Vector2f>(output.getSize());
-
-    sf::VertexArray vertices(sf::TrianglesStrip, 4);
-    vertices[0] = sf::Vertex(sf::Vector2f(0, 0),            sf::Vector2f(0, 1));
-    vertices[1] = sf::Vertex(sf::Vector2f(outputSize.x, 0), sf::Vector2f(1, 1));
-    vertices[2] = sf::Vertex(sf::Vector2f(0, outputSize.y), sf::Vector2f(0, 0));
-    vertices[3] = sf::Vertex(sf::Vector2f(outputSize),      sf::Vector2f(1, 0));
-
-    sf::RenderStates states;
-    states.shader    = &shader;
-    states.blendMode = sf::BlendNone;
-
-    output.draw(vertices, states);
 }

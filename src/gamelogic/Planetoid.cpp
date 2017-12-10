@@ -44,7 +44,7 @@ Planetoid::Planetoid(int size, Hex position)
         shape.setPoint(i, sf::Vector2f(x, y));
     }
     shape.setFillColor(Transparent);
-    shape.setOutlineColor(Grey);
+    shape.setOutlineColor(sf::Color(100,100,100));
     shape.setOutlineThickness(10);
 
     shape.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
@@ -129,10 +129,10 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
         col.a = 55 + 200.0*(1.0 - (gravity_wave_radius/(float)mass));
         gravity_wave.setOutlineColor(col);
         gravity_wave.setScale(gravity_wave_radius, gravity_wave_radius);
-        gravity_wave.setOutlineThickness(pow(1.3, (mass - gravity_wave_radius)));
+        gravity_wave.setOutlineThickness(5*(mass - gravity_wave_radius));
         target->draw(gravity_wave);
 
-        gravity_wave_radius -= dt * pow(1.2, ((float)mass) - gravity_wave_radius);
+        gravity_wave_radius -= dt * (mass - gravity_wave_radius);
 
         if ((gravity_wave_radius < 0.5) ||
             (size > 1 && gravity_wave_radius < size))
