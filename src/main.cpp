@@ -62,11 +62,14 @@ int main(int argc, char* argv[])
 
     Bloom bloom;
     Flicker flicker;
+    float pixelation_factor = 1.0;
 
-    sf::RenderTexture canvas, output_canvas;
-    canvas.create(window.getSize().x, window.getSize().y);
-    output_canvas.create(window.getSize().x, window.getSize().y);
-    
+    sf::RenderTexture working_texture1, working_texture2;
+    working_texture1.create(window.getSize().x/pixelation_factor, window.getSize().y/pixelation_factor);
+    working_texture1.setSmooth(true);
+    working_texture2.create(window.getSize().x/pixelation_factor, window.getSize().y/pixelation_factor);
+    working_texture2.setSmooth(true);
+
     ////////////////////////////////////////
     //               main loop            //
     ////////////////////////////////////////
@@ -130,7 +133,17 @@ int main(int argc, char* argv[])
                     if (event.key.code == sf::Keyboard::X)
                         debug = !debug;
                     if (event.key.code == sf::Keyboard::Z)
+                    {
                         shaders_on = !shaders_on;
+                        if (!shaders_on)
+                        {
+                            working_texture1.create(window.getSize().x, window.getSize().y);
+                            working_texture1.setSmooth(true);
+                            working_texture2.create(window.getSize().x, window.getSize().y);
+                            working_texture2.setSmooth(true);
+                            pixelation_factor = 1;
+                        }
+                    }
                     if (event.key.code == sf::Keyboard::Space)
                         ship.update();
                     if (event.key.code == sf::Keyboard::Q)
@@ -144,22 +157,36 @@ int main(int argc, char* argv[])
         //            rendering               //
         ////////////////////////////////////////  
         {
-            canvas.clear(BG_COLOUR);
-            canvas.setView(view);
-            background.draw(&canvas, zoom, hex_nums);
+            if (shaders_on)
+            {
+                float prev_factor = pixelation_factor;
+                pixelation_factor = flicker.get_pixelation_factor();
+                if (pixelation_factor != prev_factor)
+                {
+                    working_texture1.create(window.getSize().x/pixelation_factor, window.getSize().y/pixelation_factor);
+                    working_texture1.setSmooth(true);
+                    working_texture2.create(window.getSize().x/pixelation_factor, window.getSize().y/pixelation_factor);
+                    working_texture2.setSmooth(true);
+                }
+            }
+
+            working_texture1.clear(BG_COLOUR);
+            working_texture1.setView(view);
+            background.draw(&working_texture1, zoom, hex_nums);
             for (Planetoid* p: planets)
-                p->draw(&canvas, dt, draw_gravity, debug);
-            ship.draw(&canvas, dt, debug);
-            canvas.display();
+                p->draw(&working_texture1, dt, draw_gravity, debug);
+            ship.draw(&working_texture1, dt, debug);
+            working_texture1.display();
 
             if (shaders_on)
             {
-                bloom.apply(canvas, output_canvas);
-                flicker.apply(output_canvas, window);
+                bloom.apply(working_texture1, working_texture2);
+                flicker.apply(working_texture2, window);
             }
             else
             {
-                sf::Sprite sprite(canvas.getTexture());
+                sf::Sprite sprite(working_texture1.getTexture());
+                sprite.setScale(pixelation_factor, pixelation_factor);
                 window.draw(sprite);
             }
             window.display();

@@ -9,7 +9,7 @@
 #include "utilities/utilities.hpp"
 
 const sf::Color gravity_colour = sf::Color(10,20,10);
-const sf::Color gravity_wave_colour = sf::Color(125,50,50);
+const sf::Color gravity_wave_colour = sf::Color(255,50,50);
 
 class Planetoid
 {
