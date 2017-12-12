@@ -145,7 +145,12 @@ int main(int argc, char* argv[])
                         }
                     }
                     if (event.key.code == sf::Keyboard::Space)
+                    {
                         ship.update();
+                        for (Planetoid* p: planets)
+                            p->update();
+
+                    }
                     if (event.key.code == sf::Keyboard::Q)
                         ship.velocity *= 0;
                     if (event.key.code == sf::Keyboard::V)

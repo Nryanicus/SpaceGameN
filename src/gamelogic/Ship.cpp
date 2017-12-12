@@ -21,7 +21,10 @@ void Ship::update()
     {
         // skip landing, gravity and crash checks if we're landed and aren't taking off
         if (velocity == Hex() && !taking_off) 
+        {
+            position = landed_planetoid->get_landed_ship_position(landed_location);
             return;
+        }
         else
         {
             std::cout << "Takeoff!" << std::endl;
@@ -37,15 +40,13 @@ void Ship::update()
         {
             if (position.distance(p->position) <= p->size && velocity.magnitude()<=1)
             {
-                Hex h;
-                landed_location = p->find_landing_location(position, position-velocity, &h);
+                landed_location = p->find_landing_location(position, position-velocity);
                 if (landed_location != -1)
                 {
                     landed = true;
                     landed_planetoid = p;
                     std::cout << "Landed!" << std::endl;
                     velocity = Hex();
-                    position = h;
                     return;
                 }
             }
@@ -69,7 +70,6 @@ void Ship::update()
         if (gravity <= 0) continue;
         // otherwise accelerate towards planet
         Hex dirc = position.all_hexes_between(p->position)[1] - position;
-        std::cout << "gravity " << gravity << " distance: " << distance << std::endl;
         velocity += gravity*dirc;
     }
 }
@@ -81,8 +81,7 @@ void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
     if (landed)
     {
         Vector p;
-        double theta = landed_planetoid->get_landing_position_angle(landed_location, &p);
-        rot = theta;
+        rot = landed_planetoid->get_landing_position_angle(landed_location, &p);
         pos = p.to_sfml();
         sprite.setOrigin(0, sprite.getLocalBounds().height/2);
     }

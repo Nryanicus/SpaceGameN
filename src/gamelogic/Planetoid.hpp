@@ -9,7 +9,7 @@
 #include "utilities/utilities.hpp"
 
 const sf::Color gravity_colour = sf::Color(10,20,10);
-const sf::Color gravity_wave_colour = sf::Color(255,50,50);
+const sf::Color gravity_wave_colour = sf::Color(200,50,200);
 
 class Planetoid
 {
@@ -21,6 +21,9 @@ private:
     sf::ConvexShape shape;
     double radius;
     sf::Font font;
+
+    int rotation;
+
 public:
     int size;
     int mass;
@@ -32,8 +35,11 @@ public:
     Planetoid(int size, Hex position);
     void draw(sf::RenderTarget* target, double dt, bool gravity, bool debug=false);
 
-    int find_landing_location(Hex pos, Hex prev_pos, Hex* h);
+    int find_landing_location(Hex pos, Hex prev_pos);
     double get_landing_position_angle(int landing_location, Vector* v);
+    Hex get_landed_ship_position(int landing_location);
+
+    void update();
 };
 
 #endif
