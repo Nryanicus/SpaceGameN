@@ -6,6 +6,7 @@ Planetoid::Planetoid(int size, Hex position)
   size(size), position(position)
 {
     int num_sides = 6*size;
+    double radius;
     if (size == 1) // asteroid/moon
         radius = 1.0;
     else if (size == 2) // asteroid/moon
@@ -29,29 +30,67 @@ Planetoid::Planetoid(int size, Hex position)
     collision = spiral_hex_ring(Hex(0, 0), size-1);
     surface = hex_ring(Hex(0,0), size);
 
+    radius -= 0.25;
+
     std::vector<Hex> additional_collisions = hex_ring(Hex(0,0), size);
     for (int i=0; i<6; i++)
         additional_collisions.erase(std::remove(additional_collisions.begin(), additional_collisions.end(), index_to_dirc(i)*size), additional_collisions.end());
     collision.insert(collision.end(), additional_collisions.begin(), additional_collisions.end());
 
     mass = 2*size + 2*(size-1);
-    // radius *= HEX_SIZE;
-    shape.setPointCount(num_sides);
+
+    // set elevation variations
+    for (int i=0; i<size*6; i++)
+        radii.push_back(radius);
+
+    // ensure there's not too big a gap between starting and end elevations
+    do
+    {
+        radii[size*6-1] += 0.25 * random_int(-1, 1);
+        for (int i=size*6-2; i>0; i--)
+        {
+            radii[i] = radii[i+1] + 0.25 * random_int(-1, 1);
+            if (radii[i] > radius+0.25) radii[i] = radius+0.25;
+            if (radii[i] < radius-0.25) radii[i] = radius-0.25;
+        }
+    } while(abs(radii[0]-radii[size*6-1]) > 0.25);
+
+    outline.setPrimitiveType(sf::PrimitiveType::LineStrip);
+    fill.setPrimitiveType(sf::PrimitiveType::TriangleFan);
+
     for (int i=0; i<num_sides; i++)
     {
-        double radius_here = radius;
-        // double radius_here = radius-0.25 + 0.25*random_int(-1,1);
+        radius = radii[i]*HEX_SIZE;
         double theta = 2*pi/num_sides*(i+0.5);
-        double x = HEX_SIZE*radius_here*cos(theta);
-        double y = HEX_SIZE*radius_here*sin(theta);
-        shape.setPoint(i, sf::Vector2f(x, y));
-    }
-    // std::cout << size << " side length: " << Vector(shape.getPoint(0).x-shape.getPoint(1).x, shape.getPoint(0).y-shape.getPoint(1).y).magnitude() << std::endl;
-    shape.setFillColor(BG_COLOUR);
-    shape.setOutlineColor(sf::Color(100,100,100));
-    shape.setOutlineThickness(10);
+        double x = radius*cos(theta);
+        double y = radius*sin(theta);
+        Vector p1(x,y);
+        sf::Vertex v = sf::Vertex(sf::Vector2f(x, y));
+        v.color = sf::Color(100,100,100);
+        outline.append(v);
+        v.color = BG_COLOUR;
+        fill.append(v);
 
-    shape.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
+        theta = 2*pi/num_sides*(i+1+0.5);
+        x = radius*cos(theta);
+        y = radius*sin(theta);
+        Vector p2(x,y);
+        v = sf::Vertex(sf::Vector2f(x, y));
+        v.color = sf::Color(100,100,100);
+        outline.append(v);
+        v.color = BG_COLOUR;
+        fill.append(v);
+
+
+        // cache landing positions
+        Vector p = (p1+p2)/2;
+        landing_locations.push_back(p);
+        landing_angles.push_back(std::atan2(p.y, p.x)*RADIANS_TO_DEGREES); 
+    }
+    sf::Vertex v = outline[0];
+    outline.append(v);
+
+    // std::cout << size << " side length: " << Vector(outline.getPoint(0).x-outline.getPoint(1).x, outline.getPoint(0).y-outline.getPoint(1).y).magnitude() << std::endl;
 
     //////////////////////////////////////
     // gravity
@@ -151,8 +190,12 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
         for (Hex h: surface)
             (h+position).draw(target, false, sf::Color(20,20,255,200));
     }
-    shape.setRotation(rotation*360/(size*6));
-    target->draw(shape);
+
+    sf::Transform trans;
+    trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
+    trans.rotate(rotation*360/(size*6));
+    target->draw(fill, sf::RenderStates(trans));
+    target->draw(outline, sf::RenderStates(trans));
 }
 
 int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
@@ -165,8 +208,9 @@ int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
         for (unsigned int i=0; i<surface.size(); i++)
             if ((surface[i] + position) == pos)
             {
-                int landing_location = i-rotation-1;
+                int landing_location = i-rotation-2;
                 if (landing_location < 0) landing_location += size*6;
+                std::cout << landing_location << " " << rotation << std::endl;
                 return landing_location;
             }
 
@@ -177,8 +221,9 @@ int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
     for (unsigned int i=0; i<surface.size(); i++)
         if ((surface[i] + position) == prev_pos)
         {
-            int landing_location = i-rotation-1;
+            int landing_location = i-rotation-2;
             if (landing_location < 0) landing_location += size*6;
+            std::cout << landing_location << " " << rotation << std::endl;
             return landing_location;
         }
 
@@ -188,25 +233,13 @@ int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
 // get drawing parameters of a particular landing location
 double Planetoid::get_landing_position_angle(int landing_location, Vector* p)
 {
-    // landing_location = (landing_location+rotation)%(size*6);
-    int landing_location2;
-    // landing_location2 = (landing_location+1)%(size*6);
-    if (landing_location != 0)
-        landing_location2 = landing_location-1;
-    else
-        landing_location2 = size*6;
+    sf::Transform trans;
+    trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
+    trans.rotate(rotation*360.0/float(size*6));
 
-    sf::Vector2f sfp1 = shape.getTransform().transformPoint(shape.getPoint(landing_location));
-    sf::Vector2f sfp2 = shape.getTransform().transformPoint(shape.getPoint(landing_location2));
-
-    Vector p1 = Vector(sfp1.x, sfp1.y);
-    Vector p2 = Vector(sfp2.x, sfp2.y);
-
-    (*p) = (p1+p2)/2;
-
-    Vector position_offset = axial_to_pixel(position.q, position.r);
-
-    return std::atan2(p->y - position_offset.y, p->x - position_offset.x)*RADIANS_TO_DEGREES; 
+    sf::Vector2f sfp = trans.transformPoint(landing_locations[landing_location].to_sfml());
+    (*p) = Vector(sfp.x, sfp.y);
+    return landing_angles[landing_location] + rotation*360.0/float(size*6); 
 }
 
 Hex Planetoid::get_landed_ship_position(int landing_location)

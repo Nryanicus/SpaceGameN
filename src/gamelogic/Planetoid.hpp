@@ -18,11 +18,17 @@ private:
     double gravity_wave_radius;
     sf::ConvexShape gravity_wave;
 
-    sf::ConvexShape shape;
-    double radius;
+    sf::VertexArray outline;
+    sf::VertexArray fill;
     sf::Font font;
 
     int rotation;
+
+    std::vector<double> radii;
+
+    // cache
+    std::vector<double> landing_angles;
+    std::vector<Vector> landing_locations;
 
 public:
     int size;
