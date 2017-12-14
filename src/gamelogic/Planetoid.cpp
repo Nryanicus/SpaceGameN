@@ -26,7 +26,12 @@ Planetoid::Planetoid(int size, Hex position)
 {
     int num_sides = 6*size;
     double radius = get_radius(size);
-    double atmo_radius = get_radius(size+1);
+    double atmo_radius = get_radius(size+1)+0.5;
+
+    if (size > 1)
+        has_atmosphere = random_int(0, 1);
+    else
+        has_atmosphere = false;
 
     collision = spiral_hex_ring(Hex(0, 0), size-1);
     surface = hex_ring(Hex(0,0), size);
@@ -37,10 +42,14 @@ Planetoid::Planetoid(int size, Hex position)
     std::vector<Hex> additional_collisions = hex_ring(Hex(0,0), size);
     for (int i=0; i<6; i++)
     {
-        additional_collisions.erase(std::remove(additional_collisions.begin(), additional_collisions.end(), index_to_dirc(i)*size), additional_collisions.end());
-        atmosphere_collision.erase(std::remove(atmosphere_collision.begin(), atmosphere_collision.end(), index_to_dirc(i)*(size+1)), atmosphere_collision.end());
+        Hex h = index_to_dirc(i)*size;
+        additional_collisions.erase(std::remove(additional_collisions.begin(), additional_collisions.end(), h), additional_collisions.end());
+        atmosphere_collision.push_back(h);
     }
     collision.insert(collision.end(), additional_collisions.begin(), additional_collisions.end());
+
+    if (!has_atmosphere)
+        atmosphere_collision.clear();
 
     mass = 2*size + 2*(size-1);
 
@@ -105,7 +114,7 @@ Planetoid::Planetoid(int size, Hex position)
         y = atmo_radius*HEX_SIZE*sin(theta);
         v = sf::Vertex(sf::Vector2f(x, y));
         v.color = ATMOSPHERE_COLOUR;
-        v.color.a = 40;
+        v.color.a = 30;
         atmosphere.append(v);
 
         // cache landing positions
@@ -159,6 +168,23 @@ Planetoid::Planetoid(int size, Hex position)
     gravity_wave.setOutlineThickness(1);
 
     font.loadFromFile("../res/fonts/LiberationMono-Regular.ttf");
+
+    gravity_text = sf::Text("", font);
+    gravity_text.setFillColor(GRAVITY_WAVE_COLOUR);
+    gravity_circle.setFillColor(BG_COLOUR);
+    gravity_circle.setRadius(65);
+    gravity_circle.setOrigin(gravity_circle.getLocalBounds().width/2, gravity_circle.getLocalBounds().height/2);
+
+    // draw numbers
+    for (int i=size; i<mass; i++)
+        for (int j=0; j<6; j++)
+        {
+            double theta = 2*pi/6*j;
+            double x = SQRT3*HEX_SIZE*i*cos(theta);
+            double y = SQRT3*HEX_SIZE*i*sin(theta);
+
+            gravity_positions.push_back(Vector(x, y));
+        }
 }
 
 void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool debug)
@@ -169,30 +195,17 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
         for (unsigned int i=0; i<gravity_shapes.size(); i++)
             target->draw(gravity_shapes[i]);
 
-        sf::Text text("", font);
-        text.setFillColor(GRAVITY_WAVE_COLOUR);
-        sf::CircleShape circle;
-        circle.setFillColor(BG_COLOUR);
+        for (unsigned int i=0; i< gravity_positions.size(); i++)
+        {
+            sf::Vector2f pos = (gravity_positions[i] + axial_to_pixel(position.q, position.r)).to_sfml();
+            gravity_circle.setPosition(pos);
+            target->draw(gravity_circle);
 
-        // draw numbers
-        for (int i=size; i<mass; i++)
-            for (int j=0; j<6; j++)
-            {
-                double theta = 2*pi/6*j;
-                double x = SQRT3*HEX_SIZE*i*cos(theta);
-                double y = SQRT3*HEX_SIZE*i*sin(theta);
-
-                Vector v = Vector(x, y) + axial_to_pixel(position.q, position.r);
-                text.setString(std::to_string(mass - i));
-                text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
-                text.setPosition(v.to_sfml());
-                
-                circle.setRadius(65);
-                circle.setOrigin(circle.getLocalBounds().width/2, circle.getLocalBounds().height/2);
-                circle.setPosition(v.to_sfml());
-                target->draw(circle);
-                target->draw(text);
-            }
+            gravity_text.setString(std::to_string(i/6+1));
+            gravity_text.setOrigin(gravity_text.getLocalBounds().width/2, gravity_text.getLocalBounds().height/2);
+            gravity_text.setPosition(pos);
+            target->draw(gravity_text);
+        }
 
         // draw gravity wave
         sf::Color col = GRAVITY_WAVE_COLOUR;
@@ -215,19 +228,21 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
     // atmo, surface, collision hexes
     if (debug)
     {
-        for (Hex h: atmosphere_collision)
-            (h+position).draw(target, false, sf::Color(20,255,20,200));
         for (Hex h: collision)
             (h+position).draw(target, true, sf::Color(255,20,20,50));
         for (Hex h: surface)
             (h+position).draw(target, false, sf::Color(20,20,255,200));
+        if (has_atmosphere)
+            for (Hex h: atmosphere_collision)
+                (h+position).draw(target, false, sf::Color(20,255,20,200));
     }
 
     // atmo
     sf::Transform trans;
     trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
     trans.rotate(rotation*360/(size*6));
-    target->draw(atmosphere, sf::RenderStates(trans));
+    if (has_atmosphere)
+        target->draw(atmosphere, sf::RenderStates(trans));
 
     // fill and outline
     target->draw(fill, sf::RenderStates(trans));
@@ -280,7 +295,7 @@ double Planetoid::get_landing_position_angle(int landing_location, Vector* p)
 
 Hex Planetoid::get_landed_ship_position(int landing_location)
 {
-    return position+surface[(landing_location+rotation)%(size*6)];
+    return position+surface[(landing_location+rotation+2)%(size*6)];
 }
 
 void Planetoid::update()

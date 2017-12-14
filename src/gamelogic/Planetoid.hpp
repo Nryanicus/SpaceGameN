@@ -19,6 +19,7 @@ class Planetoid
 private:
     // game state
     int rotation;
+    bool has_atmosphere;
 
     // rendering
     std::vector<sf::ConvexShape> gravity_shapes;
@@ -36,6 +37,11 @@ private:
     // cache
     std::vector<double> landing_angles;
     std::vector<Vector> landing_locations;
+
+    // rendering cache
+    sf::Text gravity_text;
+    sf::CircleShape gravity_circle;
+    std::vector<Vector> gravity_positions;
 
 public:
     // game state
