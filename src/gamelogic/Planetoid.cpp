@@ -1,40 +1,45 @@
 #include "Planetoid.hpp"
 
+double get_radius(int size)
+{
+    if (size == 1) // asteroid/moon
+        return 1.0;
+    else if (size == 2) // asteroid/moon
+        return 2.7;
+    else if (size == 3) // moon
+        return 4.4;
+    else if (size == 4) // moon/exoplanet
+        return 6.12;
+    else if (size == 5) // moon/exoplanet
+        return 7.8;
+    else if (size == 6) // exoplanet
+        return 9.54;
+    else if (size == 7) // atmo only
+        return 11.29;
+    assert(false);
+}
+
 Planetoid::Planetoid(int size, Hex position)
-: gravity_wave_radius(0), 
-  rotation(0),
+: rotation(0),
+  gravity_wave_radius(0), 
   size(size), position(position)
 {
     int num_sides = 6*size;
-    double radius;
-    if (size == 1) // asteroid/moon
-        radius = 1.0;
-    else if (size == 2) // asteroid/moon
-        radius = 2.7;
-    else if (size == 3) // moon
-        radius = 4.4;
-    else if (size == 4) // moon/exoplanet
-        radius = 6.12;
-    else if (size == 5) // moon/exoplanet
-        radius = 7.8;
-    else if (size == 6) // exoplanet
-        radius = 9.54;
-    else if (size == 7) // atmo only
-    {
-        radius = 11.29;
-        assert(false);
-    }
-    else // dissallowed
-        assert(false);
+    double radius = get_radius(size);
+    double atmo_radius = get_radius(size+1);
 
     collision = spiral_hex_ring(Hex(0, 0), size-1);
     surface = hex_ring(Hex(0,0), size);
+    atmosphere_collision = hex_ring(Hex(0,0), size+1);
 
-    radius -= 0.25;
+    radius -= ELEVATION_QUANTUM;
 
     std::vector<Hex> additional_collisions = hex_ring(Hex(0,0), size);
     for (int i=0; i<6; i++)
+    {
         additional_collisions.erase(std::remove(additional_collisions.begin(), additional_collisions.end(), index_to_dirc(i)*size), additional_collisions.end());
+        atmosphere_collision.erase(std::remove(atmosphere_collision.begin(), atmosphere_collision.end(), index_to_dirc(i)*(size+1)), atmosphere_collision.end());
+    }
     collision.insert(collision.end(), additional_collisions.begin(), additional_collisions.end());
 
     mass = 2*size + 2*(size-1);
@@ -46,32 +51,45 @@ Planetoid::Planetoid(int size, Hex position)
     // ensure there's not too big a gap between starting and end elevations
     do
     {
-        radii[size*6-1] += 0.25 * random_int(-1, 1);
+        radii[size*6-1] += ELEVATION_QUANTUM * random_int(-1, 1);
         for (int i=size*6-2; i>0; i--)
         {
-            radii[i] = radii[i+1] + 0.25 * random_int(-1, 1);
-            if (radii[i] > radius+0.25) radii[i] = radius+0.25;
-            if (radii[i] < radius-0.25) radii[i] = radius-0.25;
+            radii[i] = radii[i+1] + ELEVATION_QUANTUM * random_int(-1, 1);
+            if (radii[i] > radius+ELEVATION_QUANTUM) radii[i] = radius+ELEVATION_QUANTUM;
+            if (radii[i] < radius-ELEVATION_QUANTUM) radii[i] = radius-ELEVATION_QUANTUM;
         }
-    } while(abs(radii[0]-radii[size*6-1]) > 0.25);
+    } while(abs(radii[0]-radii[size*6-1]) > ELEVATION_QUANTUM);
 
     outline.setPrimitiveType(sf::PrimitiveType::LineStrip);
-    fill.setPrimitiveType(sf::PrimitiveType::TriangleFan);
+    fill.setPrimitiveType(sf::PrimitiveType::Triangles);
+    atmosphere.setPrimitiveType(sf::PrimitiveType::TriangleFan);
+
+    sf::Vertex v;
+    v.color = ATMOSPHERE_COLOUR;
+    atmosphere.append(v);
+
 
     for (int i=0; i<num_sides; i++)
     {
+        // centre point, for fill
+        v = sf::Vertex(sf::Vector2f(0, 0));
+        v.color = BG_COLOUR;
+        fill.append(v);
+
+        // first point, for fill and outline
         radius = radii[i]*HEX_SIZE;
         double theta = 2*pi/num_sides*(i+0.5);
         double x = radius*cos(theta);
         double y = radius*sin(theta);
         Vector p1(x,y);
-        sf::Vertex v = sf::Vertex(sf::Vector2f(x, y));
+        v = sf::Vertex(sf::Vector2f(x, y));
         v.color = sf::Color(100,100,100);
         outline.append(v);
         v.color = BG_COLOUR;
         fill.append(v);
 
-        theta = 2*pi/num_sides*(i+1+0.5);
+        // second, for fill and outline
+        theta = 2*pi/num_sides*(i+1.5);
         x = radius*cos(theta);
         y = radius*sin(theta);
         Vector p2(x,y);
@@ -80,15 +98,25 @@ Planetoid::Planetoid(int size, Hex position)
         outline.append(v);
         v.color = BG_COLOUR;
         fill.append(v);
-
+        
+        // atmo
+        theta = 2*pi/num_sides*(i+0.5);
+        x = atmo_radius*HEX_SIZE*cos(theta);
+        y = atmo_radius*HEX_SIZE*sin(theta);
+        v = sf::Vertex(sf::Vector2f(x, y));
+        v.color = ATMOSPHERE_COLOUR;
+        v.color.a = 40;
+        atmosphere.append(v);
 
         // cache landing positions
         Vector p = (p1+p2)/2;
         landing_locations.push_back(p);
         landing_angles.push_back(std::atan2(p.y, p.x)*RADIANS_TO_DEGREES); 
     }
-    sf::Vertex v = outline[0];
+    v = outline[0];
     outline.append(v);
+    v = atmosphere[1];
+    atmosphere.append(v);
 
     // std::cout << size << " side length: " << Vector(outline.getPoint(0).x-outline.getPoint(1).x, outline.getPoint(0).y-outline.getPoint(1).y).magnitude() << std::endl;
 
@@ -108,7 +136,7 @@ Planetoid::Planetoid(int size, Hex position)
             gravity_shape.setPoint(j, sf::Vector2f(x, y));
         }
         gravity_shape.setFillColor(Transparent);
-        sf::Color col = gravity_colour;
+        sf::Color col = GRAVITY_COLOUR;
         col.a = 200 + 55.0*(1.0 - ((float(i)/(float)mass)));
 
         gravity_shape.setOutlineColor(col);
@@ -130,8 +158,6 @@ Planetoid::Planetoid(int size, Hex position)
     gravity_wave.setFillColor(Transparent);
     gravity_wave.setOutlineThickness(1);
 
-    gravity_wave.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
-
     font.loadFromFile("../res/fonts/LiberationMono-Regular.ttf");
 }
 
@@ -144,9 +170,10 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
             target->draw(gravity_shapes[i]);
 
         sf::Text text("", font);
-        text.setFillColor(gravity_wave_colour);
+        text.setFillColor(GRAVITY_WAVE_COLOUR);
         sf::CircleShape circle;
         circle.setFillColor(BG_COLOUR);
+
         // draw numbers
         for (int i=size; i<mass; i++)
             for (int j=0; j<6; j++)
@@ -168,11 +195,13 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
             }
 
         // draw gravity wave
-        sf::Color col = gravity_wave_colour;
+        sf::Color col = GRAVITY_WAVE_COLOUR;
         col.a = 10 + 245.0*(1.0 - (gravity_wave_radius/(float)mass));
         gravity_wave.setOutlineColor(col);
         gravity_wave.setScale(gravity_wave_radius, gravity_wave_radius);
         gravity_wave.setOutlineThickness(mass-gravity_wave_radius);
+        gravity_wave.setPosition(axial_to_pixel(position.q, position.r).to_sfml());
+
         target->draw(gravity_wave);
 
         if (size == 1) dt *= 0.5;
@@ -183,17 +212,24 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
              gravity_wave_radius = mass-1;
     }
 
+    // atmo, surface, collision hexes
     if (debug)
     {
+        for (Hex h: atmosphere_collision)
+            (h+position).draw(target, false, sf::Color(20,255,20,200));
         for (Hex h: collision)
             (h+position).draw(target, true, sf::Color(255,20,20,50));
         for (Hex h: surface)
             (h+position).draw(target, false, sf::Color(20,20,255,200));
     }
 
+    // atmo
     sf::Transform trans;
     trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
     trans.rotate(rotation*360/(size*6));
+    target->draw(atmosphere, sf::RenderStates(trans));
+
+    // fill and outline
     target->draw(fill, sf::RenderStates(trans));
     target->draw(outline, sf::RenderStates(trans));
 }

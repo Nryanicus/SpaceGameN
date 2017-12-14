@@ -8,21 +8,28 @@
 #include "utilities/constants.hpp"
 #include "utilities/utilities.hpp"
 
-const sf::Color gravity_colour = sf::Color(10,20,10);
-const sf::Color gravity_wave_colour = sf::Color(200,50,200);
+const sf::Color GRAVITY_COLOUR = sf::Color(10,20,10);
+const sf::Color GRAVITY_WAVE_COLOUR = sf::Color(200,50,200);
+const sf::Color ATMOSPHERE_COLOUR = sf::Color(25,50,100,128);
+
+const double ELEVATION_QUANTUM = 0.25;
 
 class Planetoid
 {
 private:
+    // game state
+    int rotation;
+
+    // rendering
     std::vector<sf::ConvexShape> gravity_shapes;
     double gravity_wave_radius;
     sf::ConvexShape gravity_wave;
 
+    sf::VertexArray atmosphere;
+
     sf::VertexArray outline;
     sf::VertexArray fill;
     sf::Font font;
-
-    int rotation;
 
     std::vector<double> radii;
 
@@ -31,9 +38,12 @@ private:
     std::vector<Vector> landing_locations;
 
 public:
+    // game state
     int size;
     int mass;
     Hex position;
+    // unordered list of hexes considered to be areabrake areas for spacecraft
+    std::vector<Hex> atmosphere_collision;
     // unordered list of hexes considered to be collision areas for spacecraft
     std::vector<Hex> collision;
     // ordered list of surface hexes, clockwise from rightmost at rotation=0

@@ -53,12 +53,25 @@ void Ship::update()
         }
 
     // check for crash, scanning all hexes that were moved through
+    // check for areobrake
     for (Planetoid* p : *planets)
         for (Hex movement_hex: (position-velocity).all_hexes_between(position))
+        {
             if (movement_hex.distance(p->position) <= p->size)
                 for (Hex collision_hex: p->collision)
                     if ((collision_hex+p->position) == movement_hex)
                         std::cout << "crash! " << p->size << std::endl;
+            if (movement_hex.distance(p->position) <= p->size+2 && velocity != Hex())
+                for (Hex atmo_hex: p->atmosphere_collision)
+                    if ((atmo_hex+p->position) == movement_hex)
+                    {
+                        // std::cout << "areobrake! " << p->size << std::endl;
+                        std::vector<Hex> new_vel = Hex().all_hexes_between(velocity);
+                        velocity = new_vel[new_vel.size()-2];
+                        if (velocity == Hex())
+                            break;
+                    }
+        }
 
     // check for gravity
     for (Planetoid* p : *planets)
@@ -72,6 +85,7 @@ void Ship::update()
         Hex dirc = position.all_hexes_between(p->position)[1] - position;
         velocity += gravity*dirc;
     }
+
 }
 
 void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
@@ -103,7 +117,7 @@ void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
     {
         if (debug)
             for (Hex movement_hex: (position+velocity).all_hexes_between(position))
-                movement_hex.draw(target, true, sf::Color(50, 255, 50, 10));
+                movement_hex.draw(target, true, sf::Color(50, 255, 50, 100));
         sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
         sprite.setColor(sf::Color(50, 255, 50, 100));
         sprite.setRotation(60*rotation);
