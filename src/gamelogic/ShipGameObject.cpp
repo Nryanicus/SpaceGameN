@@ -1,20 +1,13 @@
-#include "Ship.hpp"
+#include "ShipGameObject.hpp"
 
-Ship::Ship(Hex pos, std::vector<Planetoid*>* planets)
-: position(pos), velocity(Hex(0,0)), rotation(0), planets(planets), landed(false),
-  taking_off(false), landed_planetoid(NULL), landed_location(-1), blink(false), 
-  elapsed_time(0)
-{
-    ship_texture.loadFromFile("../res/sprites/ship.png");
-    ship_texture.setSmooth(true);
-    ship_dashed_texture.loadFromFile("../res/sprites/ship_dashed.png");
-    ship_dashed_texture.setSmooth(true);
-    sprite.setTexture(ship_texture);
-    sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
-    sprite.scale(0.5,0.5);
-}
+ShipGameObject::ShipGameObject(Hex pos, std::vector<Planetoid*>* planets)
+: position(pos), velocity(Hex(0,0)), rotation(0),
+  planets(planets), 
+  landed(false), taking_off(false), landed_planetoid(NULL), landed_location(-1),
+  reset_position_preview(false)
+{}
 
-void Ship::update()
+void ShipGameObject::update()
 {
     position += velocity;
     if (landed)
@@ -27,7 +20,6 @@ void Ship::update()
         }
         else
         {
-            std::cout << "Takeoff!" << std::endl;
             landed = false;
             landed_location = -1;
             landed_planetoid = NULL;
@@ -45,7 +37,6 @@ void Ship::update()
                 {
                     landed = true;
                     landed_planetoid = p;
-                    std::cout << "Landed!" << std::endl;
                     velocity = Hex();
                     return;
                 }
@@ -65,7 +56,6 @@ void Ship::update()
                 for (Hex atmo_hex: p->atmosphere_collision)
                     if ((atmo_hex+p->position) == movement_hex)
                     {
-                        // std::cout << "areobrake! " << p->size << std::endl;
                         std::vector<Hex> new_vel = Hex().all_hexes_between(velocity);
                         velocity = new_vel[new_vel.size()-2];
                         if (velocity == Hex())
@@ -77,7 +67,8 @@ void Ship::update()
     for (Planetoid* p : *planets)
     {
         int distance = position.distance(p->position);
-        assert (distance != 0 && "ship inside planet core");
+        // assert (distance != 0 && "ShipGameObject inside planet core");
+        if (distance == 0) std::cout << "ShipGameObject inside planet core" << std::endl;
         int gravity = p->mass - distance;
         // if too far away, do nothing
         if (gravity <= 0) continue;
@@ -88,67 +79,20 @@ void Ship::update()
 
 }
 
-void Ship::draw(sf::RenderTarget* target, double dt, bool debug)
+void ShipGameObject::rotate(int dirc)
 {
-    sf::Vector2f pos;
-    double rot;
-    if (landed)
-    {
-        Vector p;
-        rot = landed_planetoid->get_landing_position_angle(landed_location, &p);
-        pos = p.to_sfml();
-        sprite.setOrigin(0, sprite.getLocalBounds().height/2);
-    }
-    else
-    {
-        sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
-        rot = 60*rotation;
-        pos = axial_to_pixel(position.q, position.r).to_sfml();
-    }
-
-    sprite.setColor(sf::Color(50, 255, 50, 200));
-    sprite.setTexture(ship_texture);
-    sprite.setRotation(rot);
-    sprite.setPosition(pos);
-    target->draw(sprite);
-
-    // draw next position
-    if (!blink && (velocity != Hex() || taking_off))
-    {
-        if (debug)
-            for (Hex movement_hex: (position+velocity).all_hexes_between(position))
-                movement_hex.draw(target, true, sf::Color(50, 255, 50, 100));
-        sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
-        sprite.setColor(sf::Color(50, 255, 50, 100));
-        sprite.setRotation(60*rotation);
-        sprite.setTexture(ship_dashed_texture);
-        sprite.setPosition(axial_to_pixel(position.q+velocity.q, position.r+velocity.r).to_sfml());
-        target->draw(sprite);
-    }
-    elapsed_time += dt;
-    if (elapsed_time > 0.5)
-    {
-        elapsed_time = 0;
-        blink = ! blink;
-    }
-}
-
-void Ship::rotate(int dirc)
-{
-    elapsed_time = 0;
-    blink = false;
+    reset_position_preview = true;
     if (dirc == 1)
         rotation = (1+rotation)%6;
     else if (dirc == -1)
         rotation = rotation==0 ? 5 : rotation-1;
     else
-        assert(false && "invalid dirc argument value to Ship::rotate");
+        assert(false && "invalid dirc argument value to ShipGameObject::rotate");
 }
 
-void Ship::accelerate(int mag)
+void ShipGameObject::accelerate(int mag)
 {
-    elapsed_time = 0;
-    blink = false;
+    reset_position_preview = true;
     if (landed && !taking_off) 
         taking_off = true;
     else

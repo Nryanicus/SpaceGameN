@@ -1,14 +1,14 @@
-#ifndef ship_hpp
-#define ship_hpp
+#ifndef shipgameobject_hpp
+#define shipgameobject_hpp
 
 #include <SFML/Graphics.hpp>
 #include "utilities/Hex.hpp"
 #include "composites/Planetoid.hpp"
 
-class Ship
+class ShipGameObject
 {
 public:
-    // flight state
+    // game state
     Hex position;
     Hex velocity;
     int rotation;
@@ -20,16 +20,11 @@ public:
     Planetoid* landed_planetoid;
     int landed_location;
 
-    // rendering
-    sf::Texture ship_texture;
-    sf::Texture ship_dashed_texture;
-    sf::Sprite sprite;
-    bool blink;
-    double elapsed_time;
+    // flag for renderer
+    bool reset_position_preview;
 
-    Ship(Hex pos, std::vector<Planetoid*>* planets);
+    ShipGameObject(Hex pos, std::vector<Planetoid*>* planets);
     void update();
-    void draw(sf::RenderTarget* target, double dt, bool debug=false);
 
     void rotate(int dirc);
     void accelerate(int mag);
