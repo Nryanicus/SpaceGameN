@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "utilities/Hex.hpp"
-#include "Planetoid.hpp"
+#include "composites/Planetoid.hpp"
 
 class Ship
 {

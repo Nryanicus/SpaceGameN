@@ -10,6 +10,6 @@ all: $(OBJECTS)
 # To remove generated files
 .PHONY: clean
 clean:
-	rm -f $(OBJECTS) vgcore.* *.d
+	rm -f $(OBJECTS) vgcore.* *.d *.o
 
 -include *.d

@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "gamelogic/Planetoid.hpp"
+#include "composites/Planetoid.hpp"
 #include "gamelogic/Ship.hpp"
 #include "rendering/Bloom.hpp"
 #include "rendering/Flicker.hpp"

@@ -9,7 +9,7 @@ EXEC = main
 DEBUG = debug
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
-SUBDIRS = utilities rendering gamelogic
+SUBDIRS = utilities rendering gamelogic composites
 
 all: $(EXEC)
 
