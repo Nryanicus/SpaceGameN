@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <algorithm>
+#include "Ocean.hpp"
 #include "utilities/Hex.hpp"
 #include "utilities/constants.hpp"
 #include "utilities/utilities.hpp"
@@ -12,18 +13,19 @@ const sf::Color GRAVITY_COLOUR = sf::Color(10,20,10);
 const sf::Color GRAVITY_WAVE_COLOUR = sf::Color(200,50,200);
 const sf::Color ATMOSPHERE_COLOUR = sf::Color(25,50,100,128);
 
-const double ELEVATION_QUANTUM = 0.25;
-
 class Planetoid
 {
 private:
     // game state
     int rotation;
     bool has_atmosphere;
+    bool has_ocean;
 
     // rendering
+    std::vector<Ocean> oceans;
     std::vector<sf::ConvexShape> gravity_shapes;
     double gravity_wave_radius;
+    double elapsed_time;
     sf::ConvexShape gravity_wave;
 
     sf::VertexArray atmosphere;
@@ -35,6 +37,7 @@ private:
     std::vector<double> radii;
 
     // cache
+    int num_sides;
     std::vector<double> landing_angles;
     std::vector<Vector> landing_locations;
 

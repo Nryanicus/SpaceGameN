@@ -21,17 +21,24 @@ double get_radius(int size)
 
 Planetoid::Planetoid(int size, Hex position)
 : rotation(0),
-  gravity_wave_radius(0), 
+  has_atmosphere(false), has_ocean(false),
+  gravity_wave_radius(0), elapsed_time(0),
+  num_sides(6*size),
   size(size), position(position)
 {
-    int num_sides = 6*size;
     double radius = get_radius(size);
     double atmo_radius = get_radius(size+1)+0.5;
+    double ocean_radius = 0;
 
+    // only larger planets can have atmos and oceans
     if (size > 1)
+    {
         has_atmosphere = random_int(0, 1);
-    else
-        has_atmosphere = false;
+        if (has_atmosphere)
+            has_ocean = random_int(0, 1);
+        if (has_ocean)
+            ocean_radius = HEX_SIZE*(radius + random_int(-1, 0)*ELEVATION_QUANTUM);
+    }
 
     collision = spiral_hex_ring(Hex(0, 0), size-1);
     surface = hex_ring(Hex(0,0), size);
@@ -51,23 +58,24 @@ Planetoid::Planetoid(int size, Hex position)
     if (!has_atmosphere)
         atmosphere_collision.clear();
 
+    // magic number for gravity calcs
     mass = 2*size + 2*(size-1);
 
     // set elevation variations
-    for (int i=0; i<size*6; i++)
+    for (int i=0; i<num_sides; i++)
         radii.push_back(radius);
 
     // ensure there's not too big a gap between starting and end elevations
     do
     {
-        radii[size*6-1] += ELEVATION_QUANTUM * random_int(-1, 1);
-        for (int i=size*6-2; i>0; i--)
+        radii[num_sides-1] += ELEVATION_QUANTUM * random_int(-1, 1);
+        for (int i=num_sides-2; i>0; i--)
         {
             radii[i] = radii[i+1] + ELEVATION_QUANTUM * random_int(-1, 1);
             if (radii[i] > radius+ELEVATION_QUANTUM) radii[i] = radius+ELEVATION_QUANTUM;
             if (radii[i] < radius-ELEVATION_QUANTUM) radii[i] = radius-ELEVATION_QUANTUM;
         }
-    } while(abs(radii[0]-radii[size*6-1]) > ELEVATION_QUANTUM);
+    } while(abs(radii[0]-radii[num_sides-1]) > ELEVATION_QUANTUM);
 
     outline.setPrimitiveType(sf::PrimitiveType::LineStrip);
     fill.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -76,7 +84,6 @@ Planetoid::Planetoid(int size, Hex position)
     sf::Vertex v;
     v.color = ATMOSPHERE_COLOUR;
     atmosphere.append(v);
-
 
     for (int i=0; i<num_sides; i++)
     {
@@ -107,7 +114,7 @@ Planetoid::Planetoid(int size, Hex position)
         outline.append(v);
         v.color = BG_COLOUR;
         fill.append(v);
-        
+
         // atmo
         theta = 2*pi/num_sides*(i+0.5);
         x = atmo_radius*HEX_SIZE*cos(theta);
@@ -116,6 +123,21 @@ Planetoid::Planetoid(int size, Hex position)
         v.color = ATMOSPHERE_COLOUR;
         v.color.a = 30;
         atmosphere.append(v);
+
+        // ocean
+        if (has_ocean && radius < ocean_radius)
+        {
+            theta = 2*pi/num_sides*(i+0.5);
+            x = ocean_radius*cos(theta);
+            y = ocean_radius*sin(theta);
+            Vector op1(x,y);
+            theta = 2*pi/num_sides*(i+1.5);
+            x = ocean_radius*cos(theta);
+            y = ocean_radius*sin(theta);
+            Vector op2(x,y);
+
+            oceans.push_back(Ocean(op1, op2, ((double)i)/((double)num_sides)));
+        }
 
         // cache landing positions
         Vector p = (p1+p2)/2;
@@ -217,8 +239,10 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
 
         target->draw(gravity_wave);
 
-        if (size == 1) dt *= 0.5;
-        gravity_wave_radius -= dt * (mass - gravity_wave_radius);
+        double dt_mod = 1;
+
+        if (size == 1) dt_mod = 0.5;
+        gravity_wave_radius -= dt*dt_mod * (mass - gravity_wave_radius);
 
         if ((gravity_wave_radius < 0.5) ||
             (size > 1 && gravity_wave_radius < size))
@@ -240,13 +264,19 @@ void Planetoid::draw(sf::RenderTarget* target, double dt, bool gravity, bool deb
     // atmo
     sf::Transform trans;
     trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
-    trans.rotate(rotation*360/(size*6));
+    trans.rotate(rotation*360/(num_sides));
     if (has_atmosphere)
         target->draw(atmosphere, sf::RenderStates(trans));
 
     // fill and outline
     target->draw(fill, sf::RenderStates(trans));
     target->draw(outline, sf::RenderStates(trans));
+
+    elapsed_time += dt;
+
+    // ocean
+    for (Ocean ocean: oceans)
+        ocean.draw(target, trans, elapsed_time);
 }
 
 int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
@@ -260,7 +290,7 @@ int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
             if ((surface[i] + position) == pos)
             {
                 int landing_location = i-rotation-2;
-                if (landing_location < 0) landing_location += size*6;
+                if (landing_location < 0) landing_location += num_sides;
                 std::cout << landing_location << " " << rotation << std::endl;
                 return landing_location;
             }
@@ -273,7 +303,7 @@ int Planetoid::find_landing_location(Hex pos, Hex prev_pos)
         if ((surface[i] + position) == prev_pos)
         {
             int landing_location = i-rotation-2;
-            if (landing_location < 0) landing_location += size*6;
+            if (landing_location < 0) landing_location += num_sides;
             std::cout << landing_location << " " << rotation << std::endl;
             return landing_location;
         }
@@ -286,19 +316,19 @@ double Planetoid::get_landing_position_angle(int landing_location, Vector* p)
 {
     sf::Transform trans;
     trans.translate(axial_to_pixel(position.q, position.r).to_sfml());
-    trans.rotate(rotation*360.0/float(size*6));
+    trans.rotate(rotation*360.0/float(num_sides));
 
     sf::Vector2f sfp = trans.transformPoint(landing_locations[landing_location].to_sfml());
     (*p) = Vector(sfp.x, sfp.y);
-    return landing_angles[landing_location] + rotation*360.0/float(size*6); 
+    return landing_angles[landing_location] + rotation*360.0/float(num_sides); 
 }
 
 Hex Planetoid::get_landed_ship_position(int landing_location)
 {
-    return position+surface[(landing_location+rotation+2)%(size*6)];
+    return position+surface[(landing_location+rotation+2)%(num_sides)];
 }
 
 void Planetoid::update()
 {
-    rotation = (rotation+1)%(size*6);
+    rotation = (rotation+1)%(num_sides);
 }
