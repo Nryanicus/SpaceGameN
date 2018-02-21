@@ -85,6 +85,12 @@ Planetoid::Planetoid(int size, Hex position)
     v.color = ATMOSPHERE_COLOUR;
     atmosphere.append(v);
 
+    // determine where oceans are
+    std::vector<bool> ocean_present;
+    if (has_ocean)
+        for (int i=0; i<num_sides; i++)
+            ocean_present.push_back(radii[i]*HEX_SIZE < ocean_radius);
+
     for (int i=0; i<num_sides; i++)
     {
         // centre point, for fill
@@ -125,7 +131,7 @@ Planetoid::Planetoid(int size, Hex position)
         atmosphere.append(v);
 
         // ocean
-        if (has_ocean && radius < ocean_radius)
+        if (has_ocean && ocean_present[i])
         {
             theta = 2*pi/num_sides*(i+0.5);
             x = ocean_radius*cos(theta);
@@ -136,7 +142,19 @@ Planetoid::Planetoid(int size, Hex position)
             y = ocean_radius*sin(theta);
             Vector op2(x,y);
 
-            oceans.push_back(Ocean(op1, op2, ((double)i)/((double)num_sides)));
+            // check previous and next sides for ocean to see if we're a coast
+            bool start_coast = false;
+            bool end_coast = false;
+            if (i == 0)
+                start_coast = !ocean_present.back();
+            else
+                start_coast = !ocean_present[i-1];
+            if (i == num_sides-1)
+                end_coast = !ocean_present.front();
+            else
+                end_coast = !ocean_present[i+1];
+
+            oceans.push_back(Ocean(op1, op2, start_coast, end_coast));
         }
 
         // cache landing positions

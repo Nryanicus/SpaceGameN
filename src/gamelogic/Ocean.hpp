@@ -14,12 +14,12 @@ class Ocean
 {
 private:
     Vector start, end;
+    bool start_coast, end_coast;
     sf::VertexArray vertex_array;
-    double base_offset;
     void update(double elapsed_time);
 public:
     // start, end local to Planetoid
-    Ocean(Vector start, Vector end, double base_offset);
+    Ocean(Vector start, Vector end, bool start_coast, bool end_coast);
     void draw(sf::RenderTarget* target, sf::Transform trans, double elapsed_time);
 };
 
