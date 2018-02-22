@@ -4,8 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <algorithm>
+#include "Ocean.hpp"
+#include "vertices.hpp"
 #include "gamelogic/PlanetoidGameObject.hpp"
-#include "rendering/Ocean.hpp"
 #include "utilities/Hex.hpp"
 #include "utilities/constants.hpp"
 #include "utilities/utilities.hpp"
@@ -15,8 +16,8 @@ const sf::Color GRAVITY_WAVE_COLOUR = sf::Color(200,50,200);
 const sf::Color ATMOSPHERE_COLOUR = sf::Color(25,50,100,128);
 
 const sf::Color TIRONIUM_COLOUR = sf::Color(200,50,50);
-const sf::Color CARBONICUM_COLOUR = sf::Color(100,175,175);
-const sf::Color HELIDROGEN_COLOUR = sf::Color(0,100,175);
+const sf::Color CARBICON_COLOUR = sf::Color(100,100,50);
+const sf::Color HELIDROGEN_COLOUR = sf::Color(100,175,175);
 const sf::Color FUNDAMENTIUM_COLOUR = sf::Color(25,25,25);
 
 class PlanetoidRenderer
@@ -38,19 +39,12 @@ private:
     sf::VertexArray fill;
 
     // resources
-    sf::Sprite surface_tironium;
-    sf::Sprite subterranean_tironium;
-    sf::Sprite surface_carbicon;
-    sf::Sprite subterranean_carbicon;
-    sf::Sprite surface_helidrogen;
-    sf::Sprite subterranean_fundamentium;
-
-    sf::Texture surface_tironium_texture;
-    sf::Texture subterranean_tironium_texture;
-    sf::Texture surface_carbicon_texture;
-    sf::Texture subterranean_carbicon_texture;
-    sf::Texture surface_helidrogen_texture;
-    sf::Texture subterranean_fundamentium_texture;
+    sf::VertexArray surface_tironium;
+    sf::VertexArray subterranean_tironium;
+    sf::VertexArray surface_carbicon;
+    sf::VertexArray subterranean_carbicon;
+    sf::VertexArray surface_helidrogen;
+    sf::VertexArray subterranean_fundamentium;
 
     // cache
     PlanetoidGameObject* planetoid;

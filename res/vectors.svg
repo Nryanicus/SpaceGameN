@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="278.05772"
-     inkscape:cy="1002.233"
+     inkscape:zoom="1.979899"
+     inkscape:cx="798.52464"
+     inkscape:cy="893.66411"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -785,124 +785,6 @@
        id="path984"
        inkscape:export-xdpi="64.804482"
        inkscape:export-ydpi="64.804482" />
-    <g
-       id="g4632"
-       transform="translate(-87.3125,3.0238095)"
-       style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
-       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/carbicon.png"
-       inkscape:export-xdpi="55.250935"
-       inkscape:export-ydpi="55.250935">
-      <rect
-         transform="rotate(-11.439848)"
-         y="98.900963"
-         x="78.800392"
-         height="22.339203"
-         width="22.339203"
-         id="rect4619"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-      <rect
-         transform="rotate(10.689363)"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-         id="rect4621"
-         width="26.930433"
-         height="26.930433"
-         x="139.11003"
-         y="46.566944" />
-      <rect
-         transform="rotate(-23.24952)"
-         y="93.987122"
-         x="72.329353"
-         height="21.381561"
-         width="21.381561"
-         id="rect4627"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </g>
-    <g
-       id="g4673"
-       transform="translate(1.5119048,-20.410714)"
-       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/tironium.png"
-       inkscape:export-xdpi="51.988091"
-       inkscape:export-ydpi="51.988091">
-      <path
-         inkscape:transform-center-y="-2.9988757"
-         transform="rotate(-72.769026,156.27958,83.807831)"
-         inkscape:transform-center-x="-5.1942033"
-         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
-         inkscape:randomized="0"
-         inkscape:rounded="0"
-         inkscape:flatsided="true"
-         sodipodi:arg2="2.0943952"
-         sodipodi:arg1="1.0471976"
-         sodipodi:r2="20.24732"
-         sodipodi:r1="23.379593"
-         sodipodi:cy="28.069941"
-         sodipodi:cx="122.46429"
-         sodipodi:sides="3"
-         id="path4653"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-         sodipodi:type="star" />
-      <path
-         sodipodi:type="star"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1.02666712;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-         id="path4655"
-         sodipodi:sides="3"
-         sodipodi:cx="122.46429"
-         sodipodi:cy="28.069941"
-         sodipodi:r1="23.379593"
-         sodipodi:r2="20.24732"
-         sodipodi:arg1="1.0471976"
-         sodipodi:arg2="2.0943952"
-         inkscape:flatsided="true"
-         inkscape:rounded="0"
-         inkscape:randomized="0"
-         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
-         inkscape:transform-center-x="-3.5858175"
-         transform="matrix(0.90734045,-0.35420201,0.35420201,0.90734045,-0.70676467,126.56117)"
-         inkscape:transform-center-y="-6.2108225" />
-      <path
-         sodipodi:type="star"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1.57241392;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-         id="path4657"
-         sodipodi:sides="3"
-         sodipodi:cx="122.46429"
-         sodipodi:cy="28.069941"
-         sodipodi:r1="23.379593"
-         sodipodi:r2="20.24732"
-         sodipodi:arg1="1.0471976"
-         sodipodi:arg2="2.0943952"
-         inkscape:flatsided="true"
-         inkscape:rounded="0"
-         inkscape:randomized="0"
-         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
-         inkscape:transform-center-x="-4.798183"
-         transform="matrix(0.4240467,-0.47395746,0.47395746,0.4240467,46.847365,125.6075)"
-         inkscape:transform-center-y="-4.292906" />
-    </g>
-    <g
-       id="g4684"
-       transform="matrix(-1,0,0,1,364.30973,0)"
-       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/helidrogen.png"
-       inkscape:export-xdpi="56.791927"
-       inkscape:export-ydpi="56.791927">
-      <circle
-         r="13.040178"
-         cy="69.836311"
-         cx="167.06548"
-         id="path4675"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-      <circle
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-         id="circle4677"
-         cx="195.69717"
-         cy="67.851929"
-         r="14.587257" />
-      <circle
-         r="10.765062"
-         cy="48.575146"
-         cx="178.49925"
-         id="circle4679"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </g>
     <rect
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:37.79527664;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="rect4692"
@@ -1050,6 +932,144 @@
          id="path966"
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:4.54692698;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:10;stroke-opacity:1;paint-order:markers stroke fill;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
          sodipodi:type="star" />
+    </g>
+    <g
+       id="g989"
+       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/tironium.png"
+       inkscape:export-xdpi="55.753216"
+       inkscape:export-ydpi="55.753216"
+       transform="translate(-49.043958,-28.196935)">
+      <path
+         sodipodi:type="star"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1.93716085;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="path967"
+         sodipodi:sides="3"
+         sodipodi:cx="122.46429"
+         sodipodi:cy="28.069941"
+         sodipodi:r1="23.379593"
+         sodipodi:r2="20.24732"
+         sodipodi:arg1="1.0471976"
+         sodipodi:arg2="2.0943952"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
+         inkscape:transform-center-x="-2.681347"
+         transform="matrix(0.15291679,-0.49305061,0.49305061,0.15291679,116.05781,170.44652)"
+         inkscape:transform-center-y="-1.5480742" />
+      <path
+         inkscape:transform-center-y="-3.8849515"
+         transform="matrix(0.42929292,-0.22155784,0.22155784,0.42929292,103.30847,135.63814)"
+         inkscape:transform-center-x="-2.2429806"
+         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
+         inkscape:randomized="0"
+         inkscape:rounded="0"
+         inkscape:flatsided="true"
+         sodipodi:arg2="2.0943952"
+         sodipodi:arg1="1.0471976"
+         sodipodi:r2="20.24732"
+         sodipodi:r1="23.379593"
+         sodipodi:cy="28.069941"
+         sodipodi:cx="122.46429"
+         sodipodi:sides="3"
+         id="path969"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.06998849;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         sodipodi:type="star" />
+      <path
+         inkscape:transform-center-y="-2.9096513"
+         transform="matrix(0.28741127,-0.18794205,0.18794205,0.28741127,149.16204,137.5501)"
+         inkscape:transform-center-x="-1.9026643"
+         d="M 134.15408,48.317263 99.084694,28.069939 134.15408,7.8226198 Z"
+         inkscape:randomized="0"
+         inkscape:rounded="0"
+         inkscape:flatsided="true"
+         sodipodi:arg2="2.0943952"
+         sodipodi:arg1="1.0471976"
+         sodipodi:r2="20.24732"
+         sodipodi:r1="23.379593"
+         sodipodi:cy="28.069941"
+         sodipodi:cx="122.46429"
+         sodipodi:sides="3"
+         id="path971"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.91200781;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         sodipodi:type="star" />
+    </g>
+    <g
+       id="g1000"
+       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/carbicon.png"
+       inkscape:export-xdpi="46.959152"
+       inkscape:export-ydpi="46.959152"
+       style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none">
+      <rect
+         transform="rotate(2.4867922)"
+         y="87.642159"
+         x="10.899913"
+         height="11.702483"
+         width="11.702483"
+         id="rect4619"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+      <rect
+         transform="rotate(-27.999122)"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="rect4621"
+         width="13.693888"
+         height="13.693888"
+         x="-12.698187"
+         y="93.527359" />
+      <rect
+         transform="rotate(-0.12236992)"
+         y="86.992722"
+         x="18.592648"
+         height="13.228459"
+         width="13.228459"
+         id="rect4627"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+      <rect
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="rect994"
+         width="11.702483"
+         height="11.702483"
+         x="66.840149"
+         y="85.212677"
+         transform="rotate(2.4867922)" />
+    </g>
+    <g
+       id="g1009"
+       inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/helidrogen.png"
+       inkscape:export-xdpi="54.333355"
+       inkscape:export-ydpi="54.333355">
+      <g
+         style="stroke-width:2.3819911;stroke-miterlimit:4;stroke-dasharray:none"
+         inkscape:export-ydpi="56.791927"
+         inkscape:export-xdpi="56.791927"
+         inkscape:export-filename="/home/nathan/Projects/SpaceGameN/res/sprites/helidrogen.png"
+         transform="matrix(-0.41981685,0,0,0.41981685,258.62655,33.290702)"
+         id="g4684">
+        <circle
+           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.3819911;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+           id="path4675"
+           cx="167.06548"
+           cy="69.836311"
+           r="13.040178" />
+        <circle
+           r="14.587257"
+           cy="67.851929"
+           cx="195.69717"
+           id="circle4677"
+           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.3819911;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+        <circle
+           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.3819911;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:145.5118103;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+           id="circle4679"
+           cx="178.49925"
+           cy="48.575146"
+           r="10.765062" />
+      </g>
+      <circle
+         r="4.4099469"
+         cy="63.673702"
+         cx="224.77367"
+         id="path1002"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:37.79527664;stroke-opacity:1;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     </g>
   </g>
 </svg>

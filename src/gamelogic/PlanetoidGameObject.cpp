@@ -89,19 +89,10 @@ PlanetoidGameObject::PlanetoidGameObject(int size, Hex position)
         if (surface_resources[i] & CARBICON && !random_int(0, 2))
             subterranean_resources[i] = subterranean_resources[i] | CARBICON;
     // subterrean fundamentium
-    // if (!random_int(0, 6))
+    if (!random_int(0, 6))
         for (int i=0; i<num_sides; i++)
             if (!surface_resources[i] && !random_int(0, 10))
                 subterranean_resources[i] = FUNDAMENTIUM;
-
-    std::cout << "planet " << size << " surface resources:" << std::endl;
-    for (int i=0; i<num_sides; i++)
-        std::cout << surface_resources[i] << " ";
-    std::cout << std::endl;
-    std::cout << "planet " << size << " subterrean resources:" << std::endl;
-    for (int i=0; i<num_sides; i++)
-        std::cout << subterranean_resources[i] << " ";
-    std::cout << std::endl;
 }
 
 int PlanetoidGameObject::find_landing_location(Hex pos, Hex prev_pos)
