@@ -175,6 +175,48 @@ PlanetoidRenderer::PlanetoidRenderer(PlanetoidGameObject* planetoid)
 
             gravity_positions.push_back(Vector(x, y));
         }
+
+    //////////////////////////////////////
+    // resources
+    //////////////////////////////////////
+    surface_tironium_texture.loadFromFile("../res/sprites/tironium.png");
+    surface_tironium_texture.setSmooth(true);
+    subterranean_tironium_texture.loadFromFile("../res/sprites/tironium_sub.png");
+    subterranean_tironium_texture.setSmooth(true);
+    surface_carbicon_texture.loadFromFile("../res/sprites/carbicon.png");
+    surface_carbicon_texture.setSmooth(true);
+    subterranean_carbicon_texture.loadFromFile("../res/sprites/carbicon_sub.png");
+    subterranean_carbicon_texture.setSmooth(true);
+    surface_helidrogen_texture.loadFromFile("../res/sprites/helidrogen.png");
+    surface_helidrogen_texture.setSmooth(true);
+    subterranean_fundamentium_texture.loadFromFile("../res/sprites/fundamentium_sub.png");
+    subterranean_fundamentium_texture.setSmooth(true);
+
+    surface_tironium.setTexture(surface_tironium_texture);
+    surface_tironium.setOrigin(surface_tironium.getLocalBounds().width/2, surface_tironium.getLocalBounds().height);
+    surface_tironium.scale(0.5, 0.5);
+    surface_tironium.setColor(TIRONIUM_COLOUR);
+    surface_carbicon.setTexture(surface_carbicon_texture);
+    surface_carbicon.setOrigin(surface_carbicon.getLocalBounds().width/2, surface_carbicon.getLocalBounds().height);
+    surface_carbicon.scale(0.5, 0.5);
+    surface_carbicon.setColor(CARBONICUM_COLOUR);
+    surface_helidrogen.setTexture(surface_helidrogen_texture);
+    surface_helidrogen.setOrigin(surface_helidrogen.getLocalBounds().width/2, surface_helidrogen.getLocalBounds().height);
+    surface_helidrogen.scale(0.5, 0.5);
+    surface_helidrogen.setColor(HELIDROGEN_COLOUR);
+
+    subterranean_tironium.setTexture(subterranean_tironium_texture);
+    subterranean_tironium.setOrigin(subterranean_tironium.getLocalBounds().width/2, subterranean_tironium.getLocalBounds().height/2);
+    subterranean_tironium.scale(0.5, 0.5);
+    subterranean_tironium.setColor(TIRONIUM_COLOUR);
+    subterranean_carbicon.setTexture(subterranean_carbicon_texture);
+    subterranean_carbicon.setOrigin(subterranean_carbicon.getLocalBounds().width/2, subterranean_carbicon.getLocalBounds().height/2);
+    subterranean_carbicon.scale(0.5, 0.5);
+    subterranean_carbicon.setColor(CARBONICUM_COLOUR);
+    subterranean_fundamentium.setTexture(subterranean_fundamentium_texture);
+    subterranean_fundamentium.setOrigin(subterranean_fundamentium.getLocalBounds().width/2, subterranean_fundamentium.getLocalBounds().height/2);
+    subterranean_fundamentium.scale(0.5, 0.5);
+    subterranean_fundamentium.setColor(FUNDAMENTIUM_COLOUR);
 }
 
 void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, bool debug)
@@ -246,16 +288,67 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
     // ocean
     for (Ocean ocean: oceans)
         ocean.draw(target, trans, elapsed_time);
+
+    // resources
+    for (int i=0; i<planetoid->num_sides; i++)
+    {
+        Vector p;
+        double rot = get_landing_position_angle(i, &p) + 90;
+        sf::Vector2f surface_pos = p.to_sfml();
+        get_landing_position_angle(i, &p, true);
+        sf::Vector2f sub_pos = p.to_sfml();
+
+        if (planetoid->surface_resources[i] & TIRONIUM)
+        {
+            surface_tironium.setPosition(surface_pos);
+            surface_tironium.setRotation(rot);
+            target->draw(surface_tironium);
+        }
+        if (planetoid->surface_resources[i] & CARBICON)
+        {
+            surface_carbicon.setPosition(surface_pos);
+            surface_carbicon.setRotation(rot);
+            target->draw(surface_carbicon);
+        }
+        if (planetoid->surface_resources[i] & HELIDROGEN)
+        {
+            surface_helidrogen.setPosition(surface_pos);
+            surface_helidrogen.setRotation(rot);
+            target->draw(surface_helidrogen);
+        }
+        if (planetoid->subterranean_resources[i] & TIRONIUM)
+        {
+            subterranean_tironium.setPosition(sub_pos);
+            subterranean_tironium.setRotation(rot);
+            target->draw(subterranean_tironium);
+        }
+        if (planetoid->subterranean_resources[i] & CARBICON)
+        {
+            subterranean_carbicon.setPosition(sub_pos);
+            subterranean_carbicon.setRotation(rot);
+            target->draw(subterranean_carbicon);
+        }
+        if (planetoid->subterranean_resources[i] & FUNDAMENTIUM)
+        {
+            subterranean_fundamentium.setPosition(sub_pos);
+            subterranean_fundamentium.setRotation(rot);
+            target->draw(subterranean_fundamentium);
+        }
+    }
 }
 
 // get drawing parameters of a particular landing location
-double PlanetoidRenderer::get_landing_position_angle(int landing_location, Vector* p)
+double PlanetoidRenderer::get_landing_position_angle(int landing_location, Vector* p, bool subterranean)
 {
     sf::Transform trans;
     trans.translate(axial_to_pixel(planetoid->position.q, planetoid->position.r).to_sfml());
     trans.rotate(planetoid->rotation*360.0/float(planetoid->num_sides));
 
-    sf::Vector2f sfp = trans.transformPoint(landing_locations[landing_location].to_sfml());
+    sf::Vector2f sfp;
+    if (subterranean)
+        sfp = trans.transformPoint((landing_locations[landing_location] - landing_locations[landing_location].normalise()*30).to_sfml());
+    else
+        sfp = trans.transformPoint(landing_locations[landing_location].to_sfml());
     (*p) = Vector(sfp.x, sfp.y);
     return landing_angles[landing_location] + planetoid->rotation*360.0/float(planetoid->num_sides); 
 }

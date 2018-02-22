@@ -10,7 +10,7 @@ ShipRenderer::ShipRenderer(ShipGameObject* ship)
     ship_dashed_texture.setSmooth(true);
     sprite.setTexture(ship_texture);
     sprite.setOrigin(sprite.getLocalBounds().width/2, sprite.getLocalBounds().height/2);
-    sprite.scale(0.5,0.5);
+    sprite.scale(0.5, 0.5);
 }
 
 void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)

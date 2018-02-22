@@ -8,6 +8,11 @@
 #include "utilities/constants.hpp"
 #include "utilities/utilities.hpp"
 
+const int TIRONIUM = 2;
+const int CARBICON = 4;
+const int HELIDROGEN = 8;
+const int FUNDAMENTIUM = 16;
+
 class PlanetoidGameObject
 {
 public:
@@ -24,6 +29,8 @@ public:
     std::vector<Hex> surface;
     std::vector<int> elevations;
     std::vector<bool> ocean_present;
+    std::vector<int> surface_resources;
+    std::vector<int> subterranean_resources;
 
     PlanetoidGameObject(int size, Hex position);
 

@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "composites/Planetoid.hpp"
-#include "gamelogic/Ship.hpp"
+#include "composites/Ship.hpp"
 #include "rendering/Bloom.hpp"
 #include "rendering/Flicker.hpp"
 #include "rendering/Background.hpp"
