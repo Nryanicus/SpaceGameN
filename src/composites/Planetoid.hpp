@@ -7,7 +7,7 @@
 class Planetoid : public PlanetoidGameObject, public PlanetoidRenderer
 {
 public:
-    Planetoid(int size, Hex position);
+    Planetoid(int size, Hex position, std::string name);
 };
 
 #endif

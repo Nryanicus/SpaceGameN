@@ -52,7 +52,7 @@ private:
     std::vector<Vector> landing_locations;
 
     // rendering cache
-    sf::Text gravity_text;
+    sf::Text text;
     sf::CircleShape gravity_circle;
     std::vector<Vector> gravity_positions;
 

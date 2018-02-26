@@ -1,7 +1,8 @@
 #include "PlanetoidGameObject.hpp"
 
-PlanetoidGameObject::PlanetoidGameObject(int size, Hex position)
-: rotation(0), num_sides(6*size), size(size), mass(2*size + 2*(size-1)),
+PlanetoidGameObject::PlanetoidGameObject(int size, Hex position, std::string name)
+: name(name),
+  rotation(0), num_sides(6*size), size(size), mass(2*size + 2*(size-1)),
   has_atmosphere(false), has_ocean(false),
   position(position)
 {

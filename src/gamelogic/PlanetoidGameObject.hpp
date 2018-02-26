@@ -16,6 +16,8 @@ const int FUNDAMENTIUM = 16;
 class PlanetoidGameObject
 {
 public:
+    // id
+    std::string name;
     // game state
     int rotation, num_sides, size, mass;
     bool has_atmosphere, has_ocean;
@@ -32,7 +34,7 @@ public:
     std::vector<int> surface_resources;
     std::vector<int> subterranean_resources;
 
-    PlanetoidGameObject(int size, Hex position);
+    PlanetoidGameObject(int size, Hex position, std::string name);
 
     int find_landing_location(Hex pos, Hex prev_pos);
     Hex get_landed_ship_position(int landing_location);

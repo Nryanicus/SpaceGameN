@@ -36,12 +36,12 @@ int main(int argc, char* argv[])
 
     Background background;
 
-    Planetoid planet1(1, Hex(0, 0));
-    Planetoid planet2(2, Hex(10, 0));
-    Planetoid planet3(3, Hex(25, 0));
-    Planetoid planet4(4, Hex(20, -20));
-    Planetoid planet5(5, Hex(-32, 32));
-    Planetoid planet6(6, Hex(-30, -30));
+    Planetoid planet1(1, Hex(0, 0), "I");
+    Planetoid planet2(2, Hex(10, 0), "II");
+    Planetoid planet3(3, Hex(25, 0), "III");
+    Planetoid planet4(4, Hex(20, -20), "IV");
+    Planetoid planet5(5, Hex(-32, 32), "V");
+    Planetoid planet6(6, Hex(-30, -30), "VI");
 
     std::vector<Planetoid*> planets;
     planets.push_back(&planet1);

@@ -159,8 +159,8 @@ PlanetoidRenderer::PlanetoidRenderer(PlanetoidGameObject* planetoid)
 
     font.loadFromFile("../res/fonts/LiberationMono-Regular.ttf");
 
-    gravity_text = sf::Text("", font);
-    gravity_text.setFillColor(GRAVITY_WAVE_COLOUR);
+    text = sf::Text("", font);
+    text.setFillColor(GRAVITY_WAVE_COLOUR);
     gravity_circle.setFillColor(BG_COLOUR);
     gravity_circle.setRadius(65);
     gravity_circle.setOrigin(gravity_circle.getLocalBounds().width/2, gravity_circle.getLocalBounds().height/2);
@@ -216,10 +216,12 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
             gravity_circle.setPosition(pos);
             target->draw(gravity_circle);
 
-            gravity_text.setString(std::to_string(i/6+1));
-            gravity_text.setOrigin(gravity_text.getLocalBounds().width/2, gravity_text.getLocalBounds().height/2);
-            gravity_text.setPosition(pos);
-            target->draw(gravity_text);
+            text.setCharacterSize(32);
+            text.setFillColor(GRAVITY_WAVE_COLOUR);
+            text.setString(std::to_string(i/6+1));
+            text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+            text.setPosition(pos);
+            target->draw(text);
         }
 
         // draw gravity wave
@@ -265,10 +267,18 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
     target->draw(fill, sf::RenderStates(trans));
     target->draw(outline, sf::RenderStates(trans));
 
+    // number
+    text.setFillColor(White);
+    text.setCharacterSize(32*planetoid->size);
+    text.setString(planetoid->name);
+    text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+    text.setPosition(axial_to_pixel(planetoid->position.q, planetoid->position.r).to_sfml());
+    target->draw(text);
+
+    // ocean
     elapsed_time += dt;
     if (elapsed_time > 2*pi) elapsed_time -= 2*pi;
 
-    // ocean
     for (Ocean ocean: oceans)
         ocean.draw(target, trans, elapsed_time);
 
