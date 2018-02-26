@@ -67,4 +67,6 @@ namespace std
     };
 }
 
+const std::vector<Hex> CARDINAL_DIRECTIONS = {Hex(1, 0), Hex(0, 1), Hex(-1, 1), Hex(-1, 0), Hex(0, -1), Hex(1, -1)};
+
 #endif
