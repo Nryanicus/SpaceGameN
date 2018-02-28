@@ -81,20 +81,28 @@ int heuristic(PositionVelocity node, PositionVelocity goal)
     return node.position.distance(goal.position) + node.velocity.distance(goal.velocity);
 }
 
-std::vector<PositionVelocity> neighbours(PositionVelocity node, std::vector<Planetoid> planetoids, int max_acceleration)
+std::vector<PositionVelocity> neighbours(PositionVelocity node, std::vector<Planetoid*> planetoids, int max_acceleration)
 {
     std::vector<PositionVelocity> ns;
     Hex new_pos = node.position + node.velocity;
+    Hex grav_vel;
+    for (Planetoid* p: planetoids)
+        grav_vel += p->get_gravity_at_point(new_pos);
     for (int a=1; a<=max_acceleration; a++)
+    {
         for (Hex h: CARDINAL_DIRECTIONS)
         {
-            Hex new_vel = node.velocity + h*a;
-            ns.push_back(PositionVelocity(new_pos, new_vel));
+            Hex new_vel = node.velocity + grav_vel + h*a;
+            for (Planetoid* p: planetoids)
+                // do not give vectors which will result in collisions
+                if (!p->collision_in_path(new_pos, new_pos+new_vel))
+                    ns.push_back(PositionVelocity(new_pos, new_vel));
         }
+    }
     return ns;
 }
 
-std::vector<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<Planetoid> planetoids)
+std::vector<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<Planetoid*> planetoids)
 {
     assert(max_acceleration > 0);
     // set up initial variables

@@ -137,3 +137,33 @@ void PlanetoidGameObject::update()
 {
     rotation = (rotation+1)%(num_sides);
 }
+
+Hex PlanetoidGameObject::get_gravity_at_point(Hex point)
+{
+    int distance = position.distance(point);
+    int gravity = mass - distance;
+    if (gravity <= 0) return Hex();
+    Hex dirc = point.all_hexes_between(position)[1] - point;
+    return gravity*dirc;
+}
+
+bool PlanetoidGameObject::collision_in_path(Hex start, Hex end, Hex* location)
+{
+    for (Hex h: (start).all_hexes_between(end))
+        if (collision_at_point(h))
+        {
+            if (location != NULL)            
+                (*location) = h;
+            return true;
+        }
+    return false;
+}
+
+bool PlanetoidGameObject::collision_at_point(Hex point)
+{
+    if (point.distance(position) <= size)
+        for (Hex collision_hex: collision)
+            if ((collision_hex+position) == point)
+                return true;
+    return false;
+}

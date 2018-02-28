@@ -46,37 +46,27 @@ void ShipGameObject::update()
     // check for crash, scanning all hexes that were moved through
     // check for areobrake
     for (Planetoid* p : *planets)
+    {
+        Hex crash;
+        if (p->collision_in_path(position-velocity, position, &crash))
+            std::cout << "crash at " << crash << std::endl;
+        // aerobrake
         for (Hex movement_hex: (position-velocity).all_hexes_between(position))
-        {
-            if (movement_hex.distance(p->position) <= p->size)
-                for (Hex collision_hex: p->collision)
-                    if ((collision_hex+p->position) == movement_hex)
-                        std::cout << "crash! " << p->size << std::endl;
             if (movement_hex.distance(p->position) <= p->size+2 && velocity != Hex())
                 for (Hex atmo_hex: p->atmosphere_collision)
                     if ((atmo_hex+p->position) == movement_hex)
                     {
                         std::vector<Hex> new_vel = Hex().all_hexes_between(velocity);
                         velocity = new_vel[new_vel.size()-2];
+                        std::cout << "areobrake at " << movement_hex << std::endl;
                         if (velocity == Hex())
                             break;
                     }
-        }
+    }
 
     // check for gravity
     for (Planetoid* p : *planets)
-    {
-        int distance = position.distance(p->position);
-        // assert (distance != 0 && "ShipGameObject inside planet core");
-        if (distance == 0) std::cout << "ShipGameObject inside planet core" << std::endl;
-        int gravity = p->mass - distance;
-        // if too far away, do nothing
-        if (gravity <= 0) continue;
-        // otherwise accelerate towards planet
-        Hex dirc = position.all_hexes_between(p->position)[1] - position;
-        velocity += gravity*dirc;
-    }
-
+        velocity += p->get_gravity_at_point(position);
 }
 
 void ShipGameObject::rotate(int dirc)

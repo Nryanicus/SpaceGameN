@@ -39,6 +39,11 @@ public:
     int find_landing_location(Hex pos, Hex prev_pos);
     Hex get_landed_ship_position(int landing_location);
 
+    Hex get_gravity_at_point(Hex point);
+    bool collision_in_path(Hex start, Hex end, Hex* location=NULL);
+    bool collision_at_point(Hex point);
+
+
     void update();
 };
 
