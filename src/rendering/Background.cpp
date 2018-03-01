@@ -35,6 +35,7 @@ void Background::draw(sf::RenderTarget* target, double zoom, bool hex_nums)
     std::vector<Hex> right_side = top_right.all_hexes_between(bot_right);
 
     sf::Text text("", font);
+    text.setFillColor(TEXT_FILL_COLOUR);
 
     for (unsigned int i=0; i<std::min(left_side.size(), right_side.size()); i++)
     {

@@ -2,7 +2,8 @@
 
 ShipRenderer::ShipRenderer(ShipGameObject* ship)
 : ship(ship),
-  blink(false), elapsed_time(0)
+  blink(false), elapsed_time(0),
+  pathfinding_state(PathfindUIState::Awaiting)
 {
     ship_array.setPrimitiveType(sf::PrimitiveType::Lines);
     for (Vector v: MILITARY_SHIP)
@@ -30,6 +31,7 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
         Vector p;
         rot = ship->landed_planetoid->get_landing_position_angle(ship->landed_location, &p);
         pos = p.to_sfml();
+        // FIXME
         pos -= (p.normalise()*LANDED_SHIP_OFFSET).to_sfml();
     }
     else
@@ -61,5 +63,19 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
     {
         elapsed_time = 0;
         blink = ! blink;
+    }
+}
+
+void ShipRenderer::take_path_input(Hex h)
+{
+    if (pathfinding_state == PathfindUIState::Awaiting)
+    {
+        goal_position = h;
+        pathfinding_state = PathfindUIState::NeedVelocity;
+    }
+    else if (pathfinding_state == PathfindUIState::NeedVelocity)
+    {
+        ship->pathfind_to(goal_position, h-goal_position);
+        pathfinding_state = PathfindUIState::Awaiting;
     }
 }

@@ -7,6 +7,7 @@
 #include "utilities/utilities.hpp"
 
 const sf::Color BG_HEX_COLOUR = sf::Color(255, 255, 0, 50);
+const sf::Color TEXT_FILL_COLOUR = sf::Color(255, 255, 255, 200);
 
 class Background
 {

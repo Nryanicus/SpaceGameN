@@ -67,6 +67,12 @@ void ShipGameObject::update()
     // check for gravity
     for (Planetoid* p : *planets)
         velocity += p->get_gravity_at_point(position);
+
+    if (planned_accelerations.size() != 0)
+    {
+        velocity += planned_accelerations.front();
+        planned_accelerations.pop_front();
+    }
 }
 
 void ShipGameObject::rotate(int dirc)
@@ -87,4 +93,17 @@ void ShipGameObject::accelerate(int mag)
         taking_off = true;
     else
         velocity += rotate_hex(Hex(1, 0), rotation)*mag;
+}
+
+void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
+{
+    planned_accelerations = pathfind(position, velocity, goal_pos, goal_vel, 1, planets);
+    if (planned_accelerations.size() == 0)
+        std::cout << "failed to find path" << std::endl;
+    else
+    {
+        std::cout << "planned accelerations " << std::endl;
+        for (Hex h: planned_accelerations)
+            std::cout << h << std::endl;
+    }
 }

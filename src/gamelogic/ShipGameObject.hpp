@@ -2,6 +2,7 @@
 #define shipgameobject_hpp
 
 #include <SFML/Graphics.hpp>
+#include "pathfinder.hpp"
 #include "utilities/Hex.hpp"
 #include "composites/Planetoid.hpp"
 
@@ -23,11 +24,16 @@ public:
     // flag for renderer
     bool reset_position_preview;
 
+    // AI
+    std::deque<Hex> planned_accelerations;
+
     ShipGameObject(Hex pos, std::vector<Planetoid*>* planets);
     void update();
 
     void rotate(int dirc);
     void accelerate(int mag);
+
+    void pathfind_to(Hex goal_pos, Hex goal_vel);
 };
 
 #endif

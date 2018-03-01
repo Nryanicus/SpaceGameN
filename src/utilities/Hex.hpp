@@ -11,6 +11,8 @@ class Hex
 public:
     int q, r;
 
+    Hex(std::pair<int, int> p) : q(p.first), r(p.second) {}
+
     Hex(int q=0, int r=0) : q(q), r(r) {}
 
     Hex(int x, int y, int z): Hex(x, z) {}

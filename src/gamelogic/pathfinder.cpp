@@ -45,7 +45,7 @@ class PositionVelocityValueComparison
 public:
     bool operator()(const PositionVelocityValue& lhs, const PositionVelocityValue& rhs)
     {
-        return lhs.value < rhs.value;
+        return lhs.value > rhs.value;
     }
 };
 
@@ -81,28 +81,33 @@ int heuristic(PositionVelocity node, PositionVelocity goal)
     return node.position.distance(goal.position) + node.velocity.distance(goal.velocity);
 }
 
-std::vector<PositionVelocity> neighbours(PositionVelocity node, std::vector<Planetoid*> planetoids, int max_acceleration)
+std::vector<PositionVelocity> neighbours(PositionVelocity node, std::vector<Planetoid*>* planetoids, int max_acceleration)
 {
     std::vector<PositionVelocity> ns;
+    
     Hex new_pos = node.position + node.velocity;
-    Hex grav_vel;
-    for (Planetoid* p: planetoids)
-        grav_vel += p->get_gravity_at_point(new_pos);
+    for (Planetoid* p: *planetoids)
+        new_pos += p->get_gravity_at_point(node.position);
+    
+    Hex grav_accel;
+    for (Planetoid* p: *planetoids)
+        grav_accel += p->get_gravity_at_point(new_pos);
+
     for (int a=1; a<=max_acceleration; a++)
-    {
         for (Hex h: CARDINAL_DIRECTIONS)
         {
-            Hex new_vel = node.velocity + grav_vel + h*a;
-            for (Planetoid* p: planetoids)
-                // do not give vectors which will result in collisions
-                if (!p->collision_in_path(new_pos, new_pos+new_vel))
+            Hex new_vel = node.velocity + h*a;
+            // do not give vectors which will result in collisions
+            if (planetoids->size() == 0)
+                ns.push_back(PositionVelocity(new_pos, new_vel));
+            for (Planetoid* p: *planetoids)
+                if (!p->collision_in_path(new_pos, new_pos+new_vel+grav_accel))
                     ns.push_back(PositionVelocity(new_pos, new_vel));
         }
-    }
     return ns;
 }
 
-std::vector<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<Planetoid*> planetoids)
+std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<Planetoid*>* planetoids)
 {
     assert(max_acceleration > 0);
     // set up initial variables
@@ -117,24 +122,33 @@ std::vector<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_v
     std::unordered_map<PositionVelocity, int> cost_so_far;
     cost_so_far[start] = 0;
 
+    int nodes_searched = 0;
+    std::cout << "finding path from " << start_pos << " " << start_vel << " to " << goal_pos << " " << goal_vel << std::endl;
+
     while (!frontier.empty())
     {
+        nodes_searched++;
         PositionVelocity current = frontier.top().positionvelocity;
+        // std::cout << "searching " << current.position << " " << current.velocity << " " << frontier.top().value << std::endl;
         frontier.pop();
         // we've found our goal, return
         if (current == goal)
         {
+            std::cout << "goal found in " << nodes_searched << " steps, creating acceleration path" << std::endl;
             std::vector<PositionVelocity> pv_path;
             pv_path.push_back(current);
             while (came_from.count(current))
             {
+                std::cout << current.position << " " << current.velocity << std::endl;
                 current = came_from[current];
                 pv_path.push_back(current);
             }
+            std::cout << pv_path.size() << std::endl;
             // create list of accelerations needed to follow found path
-            std::vector<Hex> acceleration_path;
-            for (int i=pv_path.size()-2; i>=0; i++)
+            std::deque<Hex> acceleration_path;
+            for (int i=pv_path.size()-2; i>=1; i--)
                 acceleration_path.push_back(pv_path[i].velocity - pv_path[i+1].velocity);
+            // acceleration_path.push_back(pv_path[0].velocity);
             return acceleration_path;
         }
 
@@ -146,11 +160,12 @@ std::vector<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_v
             {
                 cost_so_far[n] = new_cost;
                 int priority = new_cost + heuristic(n, goal);
+                // std::cout << "adding neighbour " << n.position << " " << n.velocity << " " << priority << std::endl;
                 frontier.push(PositionVelocityValue(n, priority));
                 came_from[n] = current;
             }
         }
     }
     // we failed to find a path
-    return std::vector<Hex>();
+    return std::deque<Hex>();
 }
