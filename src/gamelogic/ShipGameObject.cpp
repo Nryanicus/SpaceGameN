@@ -50,18 +50,18 @@ void ShipGameObject::update()
         Hex crash;
         if (p->collision_in_path(position-velocity, position, &crash))
             std::cout << "crash at " << crash << std::endl;
-        // aerobrake
-        for (Hex movement_hex: (position-velocity).all_hexes_between(position))
-            if (movement_hex.distance(p->position) <= p->size+2 && velocity != Hex())
-                for (Hex atmo_hex: p->atmosphere_collision)
-                    if ((atmo_hex+p->position) == movement_hex)
-                    {
-                        std::vector<Hex> new_vel = Hex().all_hexes_between(velocity);
-                        velocity = new_vel[new_vel.size()-2];
-                        std::cout << "areobrake at " << movement_hex << std::endl;
-                        if (velocity == Hex())
-                            break;
-                    }
+        // // aerobrake
+        // for (Hex movement_hex: (position-velocity).all_hexes_between(position))
+        //     if (movement_hex.distance(p->position) <= p->size+2 && velocity != Hex())
+        //         for (Hex atmo_hex: p->atmosphere_collision)
+        //             if ((atmo_hex+p->position) == movement_hex)
+        //             {
+        //                 std::vector<Hex> new_vel = Hex().all_hexes_between(velocity);
+        //                 velocity = new_vel[new_vel.size()-2];
+        //                 std::cout << "areobrake at " << movement_hex << std::endl;
+        //                 if (velocity == Hex())
+        //                     break;
+        //             }
     }
 
     // check for gravity
@@ -72,6 +72,8 @@ void ShipGameObject::update()
     {
         velocity += planned_accelerations.front();
         planned_accelerations.pop_front();
+        if (planned_accelerations.size() == 0)
+            std::cout << "manuevers done" << std::endl;
     }
 }
 

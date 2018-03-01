@@ -141,6 +141,7 @@ int main(int argc, char* argv[])
                     }
                     if (event.key.code == sf::Keyboard::Space)
                     {
+                        std::cout << "TURN" << std::endl;
                         ship.update();
                         for (Planetoid* p: planets)
                             p->update();
@@ -164,6 +165,7 @@ int main(int argc, char* argv[])
         //            rendering               //
         ////////////////////////////////////////  
         {
+            // shader init
             if (shaders_on)
             {
                 float prev_factor = pixelation_factor;
@@ -177,6 +179,7 @@ int main(int argc, char* argv[])
                 }
             }
 
+            // draw entities
             working_texture1.clear(BG_COLOUR);
             working_texture1.setView(view);
             background.draw(&working_texture1, zoom, hex_nums);
@@ -184,11 +187,13 @@ int main(int argc, char* argv[])
                 p->draw(&working_texture1, dt, draw_gravity, debug);
             ship.draw(&working_texture1, dt, debug);
 
+            // Debugging: hex selection
             window_dummy.setView(view);
             sf::Vector2f mouse_pos = window_dummy.mapPixelToCoords(sf::Mouse::getPosition(window));
             Hex h = Hex(pixel_to_axial(mouse_pos.x, mouse_pos.y));
             h.draw(&working_texture1, false, Green);
             
+            // draw to window
             working_texture1.display();
             if (shaders_on)
             {
