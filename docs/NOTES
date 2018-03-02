@@ -4,7 +4,12 @@ velocity at that time.
 
 rotation 0 is facing right
 
-"non-straight" lines in hex coords have two equally valid paths, make pathfinder check and choose from both when avoiding collisions
+pathfinding
+    "non-straight" lines in hex coords have two equally valid paths, make pathfinder check and choose from both when avoiding collisions
+
+animation
+    make ship face and have burn anim
+    smooth transitions between turns
 
 should I do a like NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards
 

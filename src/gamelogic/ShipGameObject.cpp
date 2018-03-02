@@ -29,7 +29,6 @@ void ShipGameObject::update()
     // check for landing
     else
         for (Planetoid* p : *planets)
-        {
             if (position.distance(p->position) <= p->size && velocity.magnitude()<=1)
             {
                 landed_location = p->find_landing_location(position, position-velocity);
@@ -41,7 +40,6 @@ void ShipGameObject::update()
                     return;
                 }
             }
-        }
 
     // check for crash, scanning all hexes that were moved through
     // check for areobrake
@@ -72,8 +70,7 @@ void ShipGameObject::update()
     {
         velocity += planned_accelerations.front();
         planned_accelerations.pop_front();
-        if (planned_accelerations.size() == 0)
-            std::cout << "manuevers done" << std::endl;
+        // std::cout << "state: " << position << " " << velocity << std::endl;
     }
 }
 
@@ -104,8 +101,8 @@ void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
         std::cout << "failed to find path" << std::endl;
     else
     {
-        std::cout << "planned accelerations " << std::endl;
-        for (Hex h: planned_accelerations)
-            std::cout << h << std::endl;
+        velocity += planned_accelerations.front();
+        planned_accelerations.pop_front();
+        // std::cout << "state: " << position << " " << velocity << std::endl;
     }
 }

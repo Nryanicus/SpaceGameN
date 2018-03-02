@@ -87,7 +87,7 @@ int graph_cost(PositionVelocityAcceleration node, PositionVelocityAcceleration g
 int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
     int dpos = node.position.distance(goal.position);
-    int dvel = node.velocity.distance(goal.velocity);
+    // int dvel = node.velocity.distance(goal.velocity);
 
     return dpos; 
 }
@@ -96,8 +96,8 @@ std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleratio
 {
     std::vector<PositionVelocityAcceleration> ns;
     
-    Hex new_pos = node.position + node.velocity;
     Hex new_vel = node.velocity + node.acceleration;
+    Hex new_pos = node.position + new_vel;
     
     // apply gravity to our vector
     for (Planetoid* p: *planetoids)
@@ -121,7 +121,6 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
 {
     assert(max_acceleration > 0);
     // set up initial variables
-    // since acceleration affects the turn ahead, begin pathfinding the step before (it will be ignored when reconstructing the path)
     PositionVelocityAcceleration start(start_pos, start_vel, Hex());
     PositionVelocityAcceleration goal(goal_pos, goal_vel, Hex());
 
@@ -145,7 +144,7 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
         // we've found our goal, return
         if (current == goal)
         {
-            // std::cout << "goal found in " << nodes_searched << " steps, creating acceleration path" << std::endl;
+            std::cout << "goal found in " << nodes_searched << " steps, creating acceleration path" << std::endl;
             std::vector<PositionVelocityAcceleration> pva_path;
             pva_path.push_back(current);
             // std::cout << current.position << " " << current.velocity << " " << current.acceleration << std::endl;
@@ -157,10 +156,19 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
             }
             // std::cout << pva_path.size() << std::endl;
             // create list of accelerations needed to follow found path
-            // ignoring last elements as it'll be zero acceleration
+            // trimming initial zero-vel and -accel states
             std::deque<Hex> acceleration_path;
-            for (int i=pva_path.size()-2; i>0; i--)
+            // std::cout << "planned states" << std::endl;
+            bool dead_initial_states = true;
+            for (int i=pva_path.size()-1; i>0; i--)
+            {
+                if (dead_initial_states && (pva_path[i].velocity + pva_path[i].acceleration == Hex()))
+                    continue;
+                else
+                    dead_initial_states = false;
+                // std::cout << pva_path[i].position << " " << pva_path[i].velocity + pva_path[i].acceleration << std::endl;
                 acceleration_path.push_back(pva_path[i].acceleration);
+            }
             return acceleration_path;
         }
 

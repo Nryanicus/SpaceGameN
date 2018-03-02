@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     double zoom = 1.0;
     bool shaders_on = false;
     bool debug = false;
-    bool hex_nums = true;
+    bool hex_nums = false;
     bool draw_gravity = false;
 
     // hacky workaround for mouse position with pixelation shader
@@ -49,12 +49,12 @@ int main(int argc, char* argv[])
     Planetoid planet6(6, Hex(-30, -30), "VI");
 
     std::vector<Planetoid*> planets;
-    // planets.push_back(&planet1);
-    // planets.push_back(&planet2);
-    // planets.push_back(&planet3);
-    // planets.push_back(&planet4);
-    // planets.push_back(&planet5);
-    // planets.push_back(&planet6);
+    planets.push_back(&planet1);
+    planets.push_back(&planet2);
+    planets.push_back(&planet3);
+    planets.push_back(&planet4);
+    planets.push_back(&planet5);
+    planets.push_back(&planet6);
 
     Ship ship(Hex(0,0), &planets);
 
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
                     }
                     if (event.key.code == sf::Keyboard::Space)
                     {
-                        std::cout << "TURN" << std::endl;
+                        // std::cout << "TURN" << std::endl;
                         ship.update();
                         for (Planetoid* p: planets)
                             p->update();
