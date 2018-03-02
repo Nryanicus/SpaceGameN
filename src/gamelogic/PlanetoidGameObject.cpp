@@ -149,14 +149,26 @@ Hex PlanetoidGameObject::get_gravity_at_point(Hex point)
 
 bool PlanetoidGameObject::collision_in_path(Hex start, Hex end, Hex* location)
 {
+    bool col1 = false;
+    bool col2 = false;
     for (Hex h: (start).all_hexes_between(end))
         if (collision_at_point(h))
         {
             if (location != NULL)            
                 (*location) = h;
-            return true;
+            col1 = true;
+            break;
         }
-    return false;
+    // test other path
+    for (Hex h: (start).all_hexes_between(end, true))
+        if (collision_at_point(h))
+        {
+            if (location != NULL)            
+                (*location) = h;
+            col2 = true;
+            break;
+        }
+    return col1 && col2;
 }
 
 bool PlanetoidGameObject::collision_at_point(Hex point)

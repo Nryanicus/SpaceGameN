@@ -28,7 +28,7 @@ public:
     Hex operator*=(int m);
     bool operator!=(Hex o);
     void draw(sf::RenderTarget* target, bool fill=false, sf::Color col=sf::Color(255,255,255,50));
-    std::vector<Hex> all_hexes_between(Hex a);
+    std::vector<Hex> all_hexes_between(Hex a, bool alt=false);
 };
 
 Hex operator*(int m, Hex h);

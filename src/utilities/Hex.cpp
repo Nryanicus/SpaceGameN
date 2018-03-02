@@ -90,19 +90,22 @@ void Hex::draw(sf::RenderTarget* target, bool fill, sf::Color col)
 /*
     Get all hexes in a line between this Hex and another
 */
-std::vector<Hex> Hex::all_hexes_between(Hex o)
+std::vector<Hex> Hex::all_hexes_between(Hex o, bool alt)
 {
     int d = distance(o);
     std::vector<Hex> results;
     
-    // add 1e-6 to make line not land on boundaries
-    double x1 = q + 1e-6;
-    double z1 = r + 1e-6;
-    double y1 = -x1-z1 - 2e-6;
+    // add 1e-6 to make line not land on boundaries, alt to land on opposite boundary
+    double mod = 1e-6;
+    if (alt) mod *= -1;
+
+    double x1 = q + mod;
+    double z1 = r + mod;
+    double y1 = -x1-z1 - 2*mod;
     
-    double x2 = o.q + 1e-6;
-    double z2 = o.r + 1e-6;
-    double y2 = -x2-z2 - 2e-6;
+    double x2 = o.q + mod;
+    double z2 = o.r + mod;
+    double y2 = -x2-z2 - 2*mod;
     for (int i=0; i<=d; i++)
     {
         double t = 1.0/d*i;
