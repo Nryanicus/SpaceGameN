@@ -1,10 +1,10 @@
 #include "ShipGameObject.hpp"
 
 ShipGameObject::ShipGameObject(Hex pos, std::vector<Planetoid*>* planets)
-: position(pos), velocity(Hex(0,0)), rotation(0),
+: position(pos), velocity(Hex(0,0)),
   planets(planets), 
   landed(false), taking_off(false), landed_planetoid(NULL), landed_location(-1),
-  reset_position_preview(false)
+  reset_position_preview(false), accelerating(-1)
 {}
 
 void ShipGameObject::update()
@@ -69,29 +69,15 @@ void ShipGameObject::update()
     if (planned_accelerations.size() != 0)
     {
         velocity += planned_accelerations.front();
+        if (planned_accelerations.front() != Hex())
+            accelerating = dirc_to_index(planned_accelerations.front());
+        else
+            accelerating = -1;
         planned_accelerations.pop_front();
         // std::cout << "state: " << position << " " << velocity << std::endl;
     }
-}
-
-void ShipGameObject::rotate(int dirc)
-{
-    reset_position_preview = true;
-    if (dirc == 1)
-        rotation = (1+rotation)%6;
-    else if (dirc == -1)
-        rotation = rotation==0 ? 5 : rotation-1;
     else
-        assert(false && "invalid dirc argument value to ShipGameObject::rotate");
-}
-
-void ShipGameObject::accelerate(int mag)
-{
-    reset_position_preview = true;
-    if (landed && !taking_off) 
-        taking_off = true;
-    else
-        velocity += rotate_hex(Hex(1, 0), rotation)*mag;
+        accelerating = -1;
 }
 
 void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
@@ -102,6 +88,10 @@ void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
     else
     {
         velocity += planned_accelerations.front();
+        if (planned_accelerations.front() != Hex())
+            accelerating = dirc_to_index(planned_accelerations.front());
+        else
+            accelerating = -1;
         planned_accelerations.pop_front();
         // std::cout << "state: " << position << " " << velocity << std::endl;
     }

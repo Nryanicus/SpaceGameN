@@ -6,7 +6,6 @@
 #include "utilities/constants.hpp"
 #include "utilities/utilities.hpp"
 
-const double ELEVATION_QUANTUM = 0.25;
 const double OCEAN_SAMPLE_FREQ = 16;
 const sf::Color OCEAN_COLOUR = sf::Color(0,0,255);
 

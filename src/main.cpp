@@ -115,14 +115,14 @@ int main(int argc, char* argv[])
                     window.close();
                 if (event.type == sf::Event::KeyPressed)
                 {
-                    if (event.key.code == sf::Keyboard::Left)
-                        ship.rotate(-1);
-                    if (event.key.code == sf::Keyboard::Right)
-                        ship.rotate(1);
-                    if (event.key.code == sf::Keyboard::Up)
-                        ship.accelerate(1);
-                    if (event.key.code == sf::Keyboard::Down)
-                        ship.accelerate(-1);
+                    // if (event.key.code == sf::Keyboard::Left)
+                    //     ship.rotate(-1);
+                    // if (event.key.code == sf::Keyboard::Right)
+                    //     ship.rotate(1);
+                    // if (event.key.code == sf::Keyboard::Up)
+                    //     ship.accelerate(1);
+                    // if (event.key.code == sf::Keyboard::Down)
+                    //     ship.accelerate(-1);
                     if (event.key.code == sf::Keyboard::C)
                         hex_nums = !hex_nums;
                     if (event.key.code == sf::Keyboard::X)

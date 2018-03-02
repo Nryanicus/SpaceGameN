@@ -12,7 +12,6 @@ public:
     // game state
     Hex position;
     Hex velocity;
-    int rotation;
 
     std::vector<Planetoid*>* planets;
 
@@ -21,17 +20,15 @@ public:
     Planetoid* landed_planetoid;
     int landed_location;
 
-    // flag for renderer
+    // flags for renderer
     bool reset_position_preview;
+    int accelerating;
 
     // AI
     std::deque<Hex> planned_accelerations;
 
     ShipGameObject(Hex pos, std::vector<Planetoid*>* planets);
     void update();
-
-    void rotate(int dirc);
-    void accelerate(int mag);
 
     void pathfind_to(Hex goal_pos, Hex goal_vel);
 };

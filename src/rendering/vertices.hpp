@@ -371,4 +371,40 @@ const std::vector<Vector> DASHED_MILITARY_SHIP = {
     Vector(30.6535, -0.1014),
 };
 
+const std::vector<std::vector<Vector>> MILITARY_SHIP_PLUME = {
+    {
+        Vector(-32.0000, -20.0000),
+        Vector(-32.0000, 20.0000),
+    },
+    {
+        Vector(-20.0000, -9.0000),
+        Vector(-20.0000, 9.0000),
+    }
+};
+
+
+const std::vector<std::vector<Vector>> DASHED_MILITARY_SHIP_PLUME = {
+    {
+        Vector(-32.0000, 20.0000),
+        Vector(-32.0000, 14.2857),
+        Vector(-32.0000, 8.5714),
+        Vector(-32.0000, 2.8571),
+        Vector(-32.0000, -2.8571),
+        Vector(-32.0000, -8.5714),
+        Vector(-32.0000, -14.2857),
+        Vector(-32.0000, -20.0000),
+    },
+    {
+        Vector(-20.0000, 9.0000),
+        Vector(-20.0000, 6.4286),
+        Vector(-20.0000, 3.8571),
+        Vector(-20.0000, 1.2857),
+        Vector(-20.0000, -1.2857),
+        Vector(-20.0000, -3.8571),
+        Vector(-20.0000, -6.4286),
+        Vector(-20.0000, -9.0000),
+    }
+};
+
+
 #endif
