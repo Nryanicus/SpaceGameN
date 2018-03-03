@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "composites/AnimatedGameObject.hpp"
-#include "composites/AnimationManager.hpp"
+#include "composites/TurnManager.hpp"
 #include "composites/Planetoid.hpp"
 #include "composites/Ship.hpp"
 #include "rendering/Bloom.hpp"
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     animated_objects.push_back(&planet5);
     animated_objects.push_back(&planet6);
 
-    AnimationManager animation_manager(animated_objects);
+    TurnManager turn_manager(animated_objects);
 
     ////////////////////////////////////////
     //          shader & vfx variables    //
@@ -153,9 +153,7 @@ int main(int argc, char* argv[])
                         }
                     }
                     if (event.key.code == sf::Keyboard::Space)
-                    {
-                        animation_manager.begin();
-                    }
+                        turn_manager.paused = !turn_manager.paused;
                     if (event.key.code == sf::Keyboard::Q)
                         ship.velocity *= 0;
                     if (event.key.code == sf::Keyboard::V)
@@ -171,7 +169,13 @@ int main(int argc, char* argv[])
                     }
             }
         }
-        animation_manager.update(dt);
+
+        ////////////////////////////////////////
+        //            game logic              //
+        ////////////////////////////////////////  
+        {
+            turn_manager.update(dt);
+        }
         ////////////////////////////////////////
         //            rendering               //
         ////////////////////////////////////////  
@@ -197,6 +201,7 @@ int main(int argc, char* argv[])
             for (Planetoid* p: planets)
                 p->draw(&working_texture1, dt, draw_gravity, debug);
             ship.draw(&working_texture1, dt, debug);
+            turn_manager.draw(&working_texture1);
 
             // Debugging: hex selection
             window_dummy.setView(view);
@@ -218,8 +223,6 @@ int main(int argc, char* argv[])
             }
             window.display();
         }
-
-
 
         dt = clock.restart().asSeconds();
     }

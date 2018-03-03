@@ -108,7 +108,6 @@ int PlanetoidGameObject::find_landing_location(Hex pos, Hex prev_pos)
             {
                 int landing_location = i-rotation-2;
                 if (landing_location < 0) landing_location += num_sides;
-                std::cout << landing_location << " " << rotation << std::endl;
                 return landing_location;
             }
 

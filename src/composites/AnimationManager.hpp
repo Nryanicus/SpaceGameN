@@ -1,5 +1,5 @@
-#ifndef AnimationManager_hpp
-#define AnimationManager_hpp
+#ifndef animationmanager_hpp
+#define animationmanager_hpp
 
 #include "AnimatedGameObject.hpp"
 #include <vector>

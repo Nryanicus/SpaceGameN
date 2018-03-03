@@ -10,6 +10,9 @@ pathfinding
 animation
     smooth transitions between turns
 
+gameplay
+    have time be a resource. Can build buildings to increase the length of turns, or spend Fundamentium to pause
+
 should I do a like NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards
 
 takeoff - have larger planets cost more fuel to take off
