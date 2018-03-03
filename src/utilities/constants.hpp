@@ -35,8 +35,6 @@ const int HEIGHT = 1080;
 
 const int GAUSS_PASSES = 1;
 
-const double ELEVATION_QUANTUM = 0.25;
-
 extern std::default_random_engine RandomGenerator;
 
 #endif

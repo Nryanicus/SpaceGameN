@@ -12,6 +12,7 @@ public:
     // game state
     Hex position;
     Hex velocity;
+    int rotation;
 
     std::vector<Planetoid*>* planets;
 
@@ -29,6 +30,9 @@ public:
 
     ShipGameObject(Hex pos, std::vector<Planetoid*>* planets);
     void update();
+
+    void rotate(int dirc);
+    void accelerate(int mag);
 
     void pathfind_to(Hex goal_pos, Hex goal_vel);
 };

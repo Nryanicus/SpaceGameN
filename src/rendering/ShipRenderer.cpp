@@ -1,8 +1,8 @@
 #include "ShipRenderer.hpp"
 
 ShipRenderer::ShipRenderer(ShipGameObject* ship)
-: ship(ship),
-  rotation(0),
+: Animated(),
+  ship(ship),
   blink(false), elapsed_time_blink(0),
   elapsed_time_plume(0),
   pathfinding_state(PathfindUIState::Awaiting)
@@ -22,6 +22,44 @@ ShipRenderer::ShipRenderer(ShipGameObject* ship)
     dashed_plume_array.resize(8);
 }
 
+Vector ShipRenderer::get_next_pos_rot(double* rot, bool* draw_burn)
+{
+    // show planned burn
+    *rot = 60*ship->rotation;
+    *draw_burn = false;
+    if (ship->planned_accelerations.size() != 0)
+        if (ship->planned_accelerations[0] != Hex())
+        {
+            *rot = 60*dirc_to_index(ship->planned_accelerations[0]);
+            *draw_burn = true;
+        }
+
+    return axial_to_pixel(ship->position.q+ship->velocity.q, ship->position.r+ship->velocity.r);
+}
+
+Vector ShipRenderer::get_current_pos_rot(double* rot, bool* draw_burn)
+{
+    Vector pos;
+    *draw_burn = false;
+    if (ship->landed)
+    {
+        // FIXME
+        *rot = ship->landed_planetoid->get_landing_position_angle(ship->landed_location, &pos, LANDED_SHIP_OFFSET);
+        // pos -= (pos.normalise()*LANDED_SHIP_OFFSET);
+    }
+    else
+    {
+        if (ship->accelerating != -1)
+        {
+            ship->rotation = ship->accelerating;
+            *draw_burn = true;
+        }
+        *rot = 60*ship->rotation;
+        pos = axial_to_pixel(ship->position.q, ship->position.r);
+    }
+    return pos;
+}
+
 void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
 {
     // if ship has received input ensure the preview is visible
@@ -32,30 +70,22 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
         ship->reset_position_preview = false;
     }
 
-    sf::Vector2f pos;
     double rot;
-    bool draw_burn = false;
-    if (ship->landed)
+    bool draw_burn;
+    Vector pos = get_current_pos_rot(&rot, &draw_burn);
+    // interpolate if we'er animating
+    if (animation_state != AnimationState::None)
     {
-        Vector p;
-        rot = ship->landed_planetoid->get_landing_position_angle(ship->landed_location, &p);
-        pos = p.to_sfml();
-        // FIXME
-        pos -= (p.normalise()*LANDED_SHIP_OFFSET).to_sfml();
-    }
-    else
-    {
-        if (ship->accelerating != -1)
-        {
-            rotation = ship->accelerating;
-            draw_burn = true;
-        }
-        rot = 60*rotation;
-        pos = axial_to_pixel(ship->position.q, ship->position.r).to_sfml();
+        double rot2;
+        bool draw_burn2;
+        Vector pos2 = get_next_pos_rot(&rot2, &draw_burn2);
+        double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
+        pos = (1-r)*pos + r*pos2;
+        rot = (1-r)*rot + r*rot2;
     }
 
     sf::Transform trans;
-    trans.translate(pos);
+    trans.translate(pos.to_sfml());
     trans.rotate(rot);
     target->draw(ship_array, sf::RenderStates(trans));
     if (draw_burn)
@@ -68,19 +98,10 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
             for (Hex movement_hex: (ship->position+ship->velocity).all_hexes_between(ship->position))
                 movement_hex.draw(target, true, sf::Color(50, 255, 50, 100));
         
-        // show planned burn
-        rot = 60*rotation;
-        draw_burn = false;
-        if (ship->planned_accelerations.size() != 0)
-            if (ship->planned_accelerations[0] != Hex())
-            {
-                rot = 60*dirc_to_index(ship->planned_accelerations[0]);
-                draw_burn = true;
-            }
+        pos = get_next_pos_rot(&rot, &draw_burn);
 
-        pos = axial_to_pixel(ship->position.q+ship->velocity.q, ship->position.r+ship->velocity.r).to_sfml();
         trans = sf::Transform();
-        trans.translate(pos);
+        trans.translate(pos.to_sfml());
         trans.rotate(rot);
         target->draw(dashed_ship_array, sf::RenderStates(trans));
         if (draw_burn)

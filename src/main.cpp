@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include "composites/AnimatedGameObject.hpp"
+#include "composites/AnimationManager.hpp"
 #include "composites/Planetoid.hpp"
 #include "composites/Ship.hpp"
 #include "rendering/Bloom.hpp"
@@ -61,6 +63,17 @@ int main(int argc, char* argv[])
     sf::Clock clock;
     double dt = 0;
 
+    std::vector<AnimatedGameObject*> animated_objects;
+    animated_objects.push_back(&ship);
+    animated_objects.push_back(&planet1);
+    animated_objects.push_back(&planet2);
+    animated_objects.push_back(&planet3);
+    animated_objects.push_back(&planet4);
+    animated_objects.push_back(&planet5);
+    animated_objects.push_back(&planet6);
+
+    AnimationManager animation_manager(animated_objects);
+
     ////////////////////////////////////////
     //          shader & vfx variables    //
     ////////////////////////////////////////
@@ -115,14 +128,14 @@ int main(int argc, char* argv[])
                     window.close();
                 if (event.type == sf::Event::KeyPressed)
                 {
-                    // if (event.key.code == sf::Keyboard::Left)
-                    //     ship.rotate(-1);
-                    // if (event.key.code == sf::Keyboard::Right)
-                    //     ship.rotate(1);
-                    // if (event.key.code == sf::Keyboard::Up)
-                    //     ship.accelerate(1);
-                    // if (event.key.code == sf::Keyboard::Down)
-                    //     ship.accelerate(-1);
+                    if (event.key.code == sf::Keyboard::Left)
+                        ship.rotate(-1);
+                    if (event.key.code == sf::Keyboard::Right)
+                        ship.rotate(1);
+                    if (event.key.code == sf::Keyboard::Up)
+                        ship.accelerate(1);
+                    if (event.key.code == sf::Keyboard::Down)
+                        ship.accelerate(-1);
                     if (event.key.code == sf::Keyboard::C)
                         hex_nums = !hex_nums;
                     if (event.key.code == sf::Keyboard::X)
@@ -141,17 +154,14 @@ int main(int argc, char* argv[])
                     }
                     if (event.key.code == sf::Keyboard::Space)
                     {
-                        // std::cout << "TURN" << std::endl;
-                        ship.update();
-                        for (Planetoid* p: planets)
-                            p->update();
+                        animation_manager.begin();
                     }
                     if (event.key.code == sf::Keyboard::Q)
                         ship.velocity *= 0;
                     if (event.key.code == sf::Keyboard::V)
                         draw_gravity = !draw_gravity;
                 }
-                if (event.type == sf::Event::MouseButtonPressed)
+                if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
                         window_dummy.setView(view);
@@ -161,6 +171,7 @@ int main(int argc, char* argv[])
                     }
             }
         }
+        animation_manager.update(dt);
         ////////////////////////////////////////
         //            rendering               //
         ////////////////////////////////////////  

@@ -43,6 +43,7 @@ public:
     bool collision_in_path(Hex start, Hex end, Hex* location=NULL);
     bool collision_at_point(Hex point);
 
+    int get_next_rotation();
 
     void update();
 };

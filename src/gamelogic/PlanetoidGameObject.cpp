@@ -135,7 +135,12 @@ Hex PlanetoidGameObject::get_landed_ship_position(int landing_location)
 
 void PlanetoidGameObject::update()
 {
-    rotation = (rotation+1)%(num_sides);
+    rotation = get_next_rotation();
+}
+
+int PlanetoidGameObject::get_next_rotation()
+{
+    return (rotation+1)%(num_sides);
 }
 
 Hex PlanetoidGameObject::get_gravity_at_point(Hex point)

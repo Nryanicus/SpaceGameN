@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <algorithm>
+#include "Animated.hpp"
 #include "Ocean.hpp"
 #include "vertices.hpp"
 #include "gamelogic/PlanetoidGameObject.hpp"
@@ -20,7 +21,7 @@ const sf::Color CARBICON_COLOUR = sf::Color(100,100,50);
 const sf::Color HELIDROGEN_COLOUR = sf::Color(100,175,175);
 const sf::Color FUNDAMENTIUM_COLOUR = sf::Color(25,25,25);
 
-class PlanetoidRenderer
+class PlanetoidRenderer : public Animated
 {
 private:
     std::vector<Ocean> oceans;
@@ -60,7 +61,7 @@ public:
     PlanetoidRenderer(PlanetoidGameObject* p);
     void draw(sf::RenderTarget* target, double dt, bool gravity, bool debug=false);
 
-    double get_landing_position_angle(int landing_location, Vector* v, bool subterranean=false);
+    double get_landing_position_angle(int landing_location, Vector* v, double offset=0);
 };
 
 #endif

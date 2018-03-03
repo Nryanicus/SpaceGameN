@@ -96,3 +96,23 @@ void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
         // std::cout << "state: " << position << " " << velocity << std::endl;
     }
 }
+
+void ShipGameObject::rotate(int dirc)
+{
+    reset_position_preview = true;
+    if (dirc == 1)
+        rotation = (1+rotation)%6;
+    else if (dirc == -1)
+        rotation = rotation==0 ? 5 : rotation-1;
+    else
+        assert(false && "invalid dirc argument value to ShipGameObject::rotate");
+}
+
+void ShipGameObject::accelerate(int mag)
+{
+    reset_position_preview = true;
+    if (landed && !taking_off) 
+        taking_off = true;
+    else
+        velocity += rotate_hex(Hex(1, 0), rotation)*mag;
+}

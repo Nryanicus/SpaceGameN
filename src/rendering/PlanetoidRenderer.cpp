@@ -20,7 +20,8 @@ double get_radius(int size)
 }
 
 PlanetoidRenderer::PlanetoidRenderer(PlanetoidGameObject* planetoid)
-: gravity_wave_radius(0), elapsed_time(0),
+: Animated(),
+  gravity_wave_radius(0), elapsed_time(0),
   planetoid(planetoid)
 {
     double radius = get_radius(planetoid->size) - ELEVATION_QUANTUM;
@@ -259,7 +260,9 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
     // atmo
     sf::Transform trans;
     trans.translate(axial_to_pixel(planetoid->position.q, planetoid->position.r).to_sfml());
-    trans.rotate(planetoid->rotation*360/(planetoid->num_sides));
+    double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
+    double rotation = planetoid->rotation*(1-r) + (planetoid->rotation+1)*r;
+    trans.rotate(rotation*360/(planetoid->num_sides));
     if (planetoid->has_atmosphere)
         target->draw(atmosphere, sf::RenderStates(trans));
 
@@ -288,7 +291,7 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
         Vector p;
         double rot = get_landing_position_angle(i, &p) - 90;
         sf::Vector2f surface_pos = p.to_sfml();
-        get_landing_position_angle(i, &p, true);
+        get_landing_position_angle(i, &p, -30);
         sf::Vector2f sub_pos = p.to_sfml();
         trans = sf::Transform();
         trans.translate(surface_pos);
@@ -313,17 +316,16 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
 }
 
 // get drawing parameters of a particular landing location
-double PlanetoidRenderer::get_landing_position_angle(int landing_location, Vector* p, bool subterranean)
+double PlanetoidRenderer::get_landing_position_angle(int landing_location, Vector* p, double offset)
 {
     sf::Transform trans;
     trans.translate(axial_to_pixel(planetoid->position.q, planetoid->position.r).to_sfml());
-    trans.rotate(planetoid->rotation*360.0/float(planetoid->num_sides));
+    double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
+    double rotation = planetoid->rotation*(1-r) + (planetoid->rotation+1)*r;
+    trans.rotate(rotation*360.0/float(planetoid->num_sides));
 
     sf::Vector2f sfp;
-    if (subterranean)
-        sfp = trans.transformPoint((landing_locations[landing_location] - landing_locations[landing_location].normalise()*30).to_sfml());
-    else
-        sfp = trans.transformPoint(landing_locations[landing_location].to_sfml());
+    sfp = trans.transformPoint((landing_locations[landing_location] + landing_locations[landing_location].normalise()*offset).to_sfml());
     (*p) = Vector(sfp.x, sfp.y);
-    return landing_angles[landing_location] + planetoid->rotation*360.0/float(planetoid->num_sides); 
+    return landing_angles[landing_location] + rotation*360.0/float(planetoid->num_sides); 
 }
