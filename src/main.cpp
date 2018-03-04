@@ -200,14 +200,16 @@ int main(int argc, char* argv[])
             background.draw(&working_texture1, zoom, hex_nums);
             for (Planetoid* p: planets)
                 p->draw(&working_texture1, dt, draw_gravity, debug);
-            ship.draw(&working_texture1, dt, debug);
+
+            window_dummy.setView(view);
+            sf::Vector2f mouse_pos = window_dummy.mapPixelToCoords(sf::Mouse::getPosition(window));
+            Hex mouse_hex = Hex(pixel_to_axial(mouse_pos.x, mouse_pos.y));
+
+            ship.draw(&working_texture1, dt, mouse_hex, debug);
             turn_manager.draw(&working_texture1);
 
             // Debugging: hex selection
-            window_dummy.setView(view);
-            sf::Vector2f mouse_pos = window_dummy.mapPixelToCoords(sf::Mouse::getPosition(window));
-            Hex h = Hex(pixel_to_axial(mouse_pos.x, mouse_pos.y));
-            h.draw(&working_texture1, false, Green);
+            mouse_hex.draw(&working_texture1, false, Green);
             
             // draw to window
             working_texture1.display();

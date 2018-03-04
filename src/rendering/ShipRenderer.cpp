@@ -30,9 +30,10 @@ Vector ShipRenderer::get_next_pos_rot(double* rot, bool* draw_burn)
     if (ship->planned_accelerations.size() != 0)
         if (ship->planned_accelerations[0] != Hex())
         {
-            int s = ship->planned_accelerations[0].all_hexes_between(Hex()).size();
+            std::vector<Hex> acceleration_line = ship->planned_accelerations[0].all_hexes_between(Hex());
+            int s = acceleration_line.size();
             assert(s >= 2);
-            int next_rotation = dirc_to_index(ship->planned_accelerations[0].all_hexes_between(Hex())[s-2]);
+            int next_rotation = dirc_to_index(acceleration_line[s-2]);
             *rot = 60*next_rotation;
             *draw_burn = true;
         }
@@ -55,7 +56,7 @@ Vector ShipRenderer::get_current_pos_rot(double* rot, bool* draw_burn)
     return pos;
 }
 
-void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
+void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool debug)
 {
     // if ship has received input ensure the preview is visible
     if (ship->reset_position_preview)
@@ -68,8 +69,9 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
     double rot;
     bool draw_burn;
     Vector pos = get_current_pos_rot(&rot, &draw_burn);
-    // interpolate if we'er animating
-    if (animation_state != AnimationState::None)
+    double current_rot = rot;
+    // interpolate if we're animating
+    if (animation_state != AnimationState::None && !ship->landed)
     {
         double rot2;
         bool draw_burn2;
@@ -94,8 +96,70 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
     if (draw_burn)
         target->draw(plume_array, sf::RenderStates(trans));
 
+    // draw pathfinding UI
+    if (pathfinding_state == PathfindUIState::NeedVelocity)
+    {
+        double bounce = 0.9 - 0.5*sin(elapsed_time_blink/BLINK_ANIMATE_TIME*pi);
+
+        trans = sf::Transform();
+        Vector goal_pos = axial_to_pixel(goal_position.q, goal_position.r);
+        trans.translate(goal_pos.to_sfml());
+        trans.rotate(current_rot);
+        trans.scale(bounce, bounce);
+        target->draw(ship_array, sf::RenderStates(trans));
+
+        trans = sf::Transform();
+        Vector mouse_pos = axial_to_pixel(mouse_hex.q, mouse_hex.r);
+        trans.translate(mouse_pos.to_sfml());
+        trans.rotate(current_rot);
+        trans.scale(bounce, bounce);
+        target->draw(dashed_ship_array, sf::RenderStates(trans));
+    }
+
+    // draw planned trajectory
+    if (ship->planned_accelerations.size() > 0)
+    {
+        Hex next_pos = ship->position;
+        Hex next_vel = ship->velocity;
+        int next_rot = ship->rotation;
+
+        std::vector<Hex> future_pos;
+        std::vector<int> future_rot;
+        std::vector<bool> future_accel;
+
+        for (Hex a : ship->planned_accelerations)
+        {
+            next_pos += next_vel;
+            next_vel += a;
+            for (Planetoid* p: *ship->planets)
+                next_vel += p->get_gravity_at_point(next_pos);
+
+            if (a != Hex())
+            {
+                std::vector<Hex> acceleration_line = a.all_hexes_between(Hex());
+                int s = acceleration_line.size();
+                assert(s >= 2);
+                next_rot = dirc_to_index(acceleration_line[s-2]);
+            }
+
+            future_pos.push_back(next_pos);
+            future_rot.push_back(next_rot);
+            future_accel.push_back(a != Hex());
+        }
+
+        int draw_index = ceil( ((double) future_pos.size())*elapsed_time_path/PATH_ANIMATE_TIME ) -1;
+        draw_index = draw_index<0 ? 0 : draw_index;
+        trans = sf::Transform();
+        pos = axial_to_pixel(future_pos[draw_index].q, future_pos[draw_index].r);
+        trans.translate(pos.to_sfml());
+        trans.rotate(future_rot[draw_index]*60);
+        target->draw(dashed_ship_array, sf::RenderStates(trans));
+        if (future_accel[draw_index])
+            target->draw(dashed_plume_array, sf::RenderStates(trans));
+
+    }
     // draw next position
-    if (!blink && (ship->velocity != Hex() || ship->taking_off))
+    else if (!blink && (ship->velocity != Hex() || ship->taking_off || ship->acceleration != Hex()))
     {
         if (debug)
             for (Hex movement_hex: (ship->position+ship->velocity).all_hexes_between(ship->position))
@@ -106,17 +170,22 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
         trans = sf::Transform();
         trans.translate(pos.to_sfml());
         trans.rotate(rot);
+        double bounce = 1.25 - 0.25*sin(elapsed_time_blink/BLINK_ANIMATE_TIME*pi);
+        trans.scale(bounce, bounce);
         target->draw(dashed_ship_array, sf::RenderStates(trans));
         if (draw_burn)
             target->draw(dashed_plume_array, sf::RenderStates(trans));
     }
 
     elapsed_time_blink += dt;
-    if (elapsed_time_blink > 0.5)
+    if (elapsed_time_blink > BLINK_ANIMATE_TIME)
     {
         elapsed_time_blink = 0;
         blink = ! blink;
     }
+    elapsed_time_path += dt;
+    if (elapsed_time_path > PATH_ANIMATE_TIME)
+        elapsed_time_path = 0;
     update_plumes(dt);
 }
 
@@ -146,6 +215,7 @@ void ShipRenderer::update_plumes(double dt)
 
 void ShipRenderer::take_path_input(Hex h)
 {
+    if (ship->is_pathfinding) return;
     if (pathfinding_state == PathfindUIState::Awaiting)
     {
         goal_position = h;

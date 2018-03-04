@@ -77,15 +77,14 @@ namespace std
 int graph_cost(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
     // fuel conservation
-    return 4 + node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());// + heuristic(node, goal);
+    return node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());// + heuristic(node, goal);
 }
 
 int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
     int dpos = node.position.distance(goal.position);
     // int dvel = node.velocity.distance(goal.velocity);
-
-    return dpos;// + dvel; 
+    return dpos;// + dvel;
 }
 
 std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<PlanetoidGameObject*>* planetoids, int max_acceleration)

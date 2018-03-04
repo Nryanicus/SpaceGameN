@@ -5,9 +5,9 @@ pathfinding
     taking off and landing
 
 UI
-    have next ship pos scale bouncily
     have each step in ship's planned future show, one after another
-    have text for pathfinding state, AWAITING, CALCING, NO FOUND, EXECUTING
+
+    have text for pathfinding state, AWAITING, CALCING, NO FOUND, EXECUTING. Have pathfinder auto reject any attempts to enter orbits of planetoids class 3 and greater (unless I come up with a better heuristic)
     
     NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards?
 
@@ -19,3 +19,7 @@ gameplay
     have time be a resource. Can build buildings to increase the length of turns, or spend Fundamentium to pause. Processed Fundamentium for time purposes: qiblets
 
     takeoff - have larger planets cost more fuel to take off
+
+    boosters - one-use acceleration
+
+    trajectory planner - plan any number of steps into the future

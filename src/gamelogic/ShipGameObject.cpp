@@ -70,15 +70,17 @@ void ShipGameObject::update()
     // do pathfinding
     check_pathfinding();
 
+    // do planned burns
     if (planned_accelerations.size() != 0)
     {
         acceleration = planned_accelerations.front();
         velocity += acceleration;
         if (acceleration != Hex())
         {
-            int s = acceleration.all_hexes_between(Hex()).size();
+            std::vector<Hex> acceleration_line = acceleration.all_hexes_between(Hex());
+            int s = acceleration_line.size();
             assert(s >= 2);
-            rotation = dirc_to_index(acceleration.all_hexes_between(Hex())[s-2]);
+            rotation = dirc_to_index(acceleration_line[s-2]);
         }
         planned_accelerations.pop_front();
         // std::cout << "state: " << position << " " << velocity << std::endl;
@@ -108,7 +110,7 @@ void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
     std::vector<PlanetoidGameObject*>* planets_local = new std::vector<PlanetoidGameObject*>();
     for (Planetoid* p: *planets)
         planets_local->push_back(new PlanetoidGameObject(p));
-    pathfinder_return = std::async(std::launch::async, pathfind, position, velocity, goal_pos, goal_vel, 2, planets_local);
+    pathfinder_return = std::async(std::launch::async, pathfind, position, velocity, goal_pos, goal_vel, 1, planets_local);
     is_pathfinding = true;
 }
 
@@ -129,5 +131,8 @@ void ShipGameObject::accelerate(int mag)
     if (landed && !taking_off) 
         taking_off = true;
     else
-        velocity += rotate_hex(Hex(1, 0), rotation)*mag;
+    {
+        acceleration = rotate_hex(Hex(1, 0), rotation)*mag;
+        velocity += acceleration;
+    }
 }
