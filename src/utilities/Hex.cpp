@@ -174,6 +174,7 @@ Hex index_to_dirc(int i)
         return Hex(0, -1);
     if (i == 5)
         return Hex(1, -1);
+    std::cout << i << std::endl;
     assert(false);
 }
 
@@ -191,6 +192,7 @@ int dirc_to_index(Hex h)
         return 4;
     if (h == Hex(1, -1))
         return 5;
+    std::cout << h << std::endl;
     assert(false);
 }
 

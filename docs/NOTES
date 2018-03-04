@@ -1,22 +1,21 @@
-Planets can't follow the same rules as ships with gravity. They will need to be
-"on rails". When a ship leaves a planet have it take on it's parent planet's
-velocity at that time.
-
 rotation 0 is facing right
 
 pathfinding
+    have pathfinder in orbit wait until starting position is correct before accelerating
     taking off and landing
 
-animation
-    smooth transitions between turns
+UI
+    have next ship pos scale bouncily
+    have each step in ship's planned future show, one after another
+    have text for pathfinding state, AWAITING, CALCING, NO FOUND, EXECUTING
+    
+    NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards?
+
+    F1 rules encylopedia. hyperlinks, info on buildings/ships/upgrades available only after the first one is built, otherwise just a blank page. Could work into console idea
+
+    UI console, to report events/numbers to make game rules more transparent without having to make a good UI?
 
 gameplay
-    have time be a resource. Can build buildings to increase the length of turns, or spend Fundamentium to pause
-    have pathfinder in orbit 
+    have time be a resource. Can build buildings to increase the length of turns, or spend Fundamentium to pause. Processed Fundamentium for time purposes: qiblets
 
-should I do a like NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards
-
-takeoff - have larger planets cost more fuel to take off
-
-UI console, to report events/numbers to make game rules more transparent without
-having to make a good UI
+    takeoff - have larger planets cost more fuel to take off

@@ -85,7 +85,7 @@ int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration go
     int dpos = node.position.distance(goal.position);
     // int dvel = node.velocity.distance(goal.velocity);
 
-    return dpos; 
+    return dpos;// + dvel; 
 }
 
 std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<PlanetoidGameObject*>* planetoids, int max_acceleration)
@@ -178,9 +178,9 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
                 acceleration_path.push_back(pva_path[i].acceleration);
                 fuel_cost += pva_path[i].acceleration.distance(Hex());
             }
-            std::cout << "goal found in " << nodes_searched << " steps, with " << nodes_pruned << " nodes pruned, fuel cost: " << fuel_cost << std::endl;
-            if (beam_search)
-                std::cout << "using beam search" << std::endl;
+            std::cout << "goal found in " << nodes_searched << " steps, with " << nodes_pruned << " nodes pruned, length: " << pva_path.size() << " fuel cost: " << fuel_cost << std::endl;
+            // if (beam_search)
+            //     std::cout << "using beam search" << std::endl;
 
             // delete unneeded data
             for (PlanetoidGameObject* p: *planetoids)

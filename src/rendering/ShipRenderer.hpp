@@ -9,8 +9,11 @@
 
 const sf::Color SHIP_COLOUR(50, 255, 50, 200);
 const sf::Color PLUME_COLOUR(255, 100, 50, 200);
+
 const sf::Color DASHED_SHIP_COLOUR(50, 255, 50, 100);
 const sf::Color DASHED_PLUME_COLOUR(255, 100, 50, 100);
+
+const sf::Color FUTURE_SHIP_COLOUR(0, 255, 0, 50);
 
 const double LANDED_SHIP_OFFSET = 17.37125;
 const double PLUME_ANIMATE_TIME = 0.75;
@@ -26,6 +29,7 @@ private:
     // rendering
     sf::VertexArray ship_array;
     sf::VertexArray dashed_ship_array;
+    sf::VertexArray future_ship_array;
     sf::VertexArray plume_array;
     sf::VertexArray dashed_plume_array;
     bool blink;
@@ -35,6 +39,7 @@ private:
     // pathfind ui
     PathfindUIState pathfinding_state;
     Hex goal_position;
+    Hex goal_velocity;
 
     void update_plumes(double dt);
 

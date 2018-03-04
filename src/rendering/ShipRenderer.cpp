@@ -30,7 +30,10 @@ Vector ShipRenderer::get_next_pos_rot(double* rot, bool* draw_burn)
     if (ship->planned_accelerations.size() != 0)
         if (ship->planned_accelerations[0] != Hex())
         {
-            *rot = 60*dirc_to_index(ship->planned_accelerations[0]);
+            int s = ship->planned_accelerations[0].all_hexes_between(Hex()).size();
+            assert(s >= 2);
+            int next_rotation = dirc_to_index(ship->planned_accelerations[0].all_hexes_between(Hex())[s-2]);
+            *rot = 60*next_rotation;
             *draw_burn = true;
         }
 
@@ -42,18 +45,10 @@ Vector ShipRenderer::get_current_pos_rot(double* rot, bool* draw_burn)
     Vector pos;
     *draw_burn = false;
     if (ship->landed)
-    {
-        // FIXME
         *rot = ship->landed_planetoid->get_landing_position_angle(ship->landed_location, &pos, LANDED_SHIP_OFFSET);
-        // pos -= (pos.normalise()*LANDED_SHIP_OFFSET);
-    }
     else
     {
-        if (ship->accelerating != -1)
-        {
-            ship->rotation = ship->accelerating;
-            *draw_burn = true;
-        }
+        *draw_burn = ship->acceleration != Hex();
         *rot = 60*ship->rotation;
         pos = axial_to_pixel(ship->position.q, ship->position.r);
     }
@@ -81,7 +76,15 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, bool debug)
         Vector pos2 = get_next_pos_rot(&rot2, &draw_burn2);
         double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
         pos = (1-r)*pos + r*pos2;
-        rot = (1-r)*rot + r*rot2;
+
+        if (abs(rot2-rot) > 180)
+        {
+            if (rot2 > rot)
+                rot += 360;
+            else
+                rot2 += 360;
+        }
+        rot = rot + (rot2-rot)*r;
     }
 
     sf::Transform trans;

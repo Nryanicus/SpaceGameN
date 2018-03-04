@@ -9,12 +9,13 @@
 #include "utilities/Hex.hpp"
 #include "composites/Planetoid.hpp"
 
-const std::chrono::milliseconds NO_TIME(1);
+const std::chrono::milliseconds NO_TIME(0);
 
 class ShipGameObject
 {
 public:
     // game state
+    Hex acceleration;
     Hex position;
     Hex velocity;
     int rotation;
@@ -27,8 +28,8 @@ public:
     int landed_location;
 
     // flags for renderer
+    bool path_not_found;
     bool reset_position_preview;
-    int accelerating;
 
     // AI
     bool is_pathfinding;
