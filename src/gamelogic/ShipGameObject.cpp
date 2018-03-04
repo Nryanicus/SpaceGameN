@@ -5,7 +5,7 @@ ShipGameObject::ShipGameObject(Hex pos, std::vector<Planetoid*>* planets)
   planets(planets), 
   landed(false), taking_off(false), landed_planetoid(NULL), landed_location(-1),
   reset_position_preview(false), 
-  pathfinding_state(PathfindingState::None)
+  pathfind_from_orbit(false), pathfinding_state(PathfindingState::None)
 {}
 
 void ShipGameObject::update()
@@ -94,6 +94,12 @@ void ShipGameObject::check_pathfinding()
     if (!pathfinder_return.valid() || pathfinder_return.wait_for(NO_TIME) != std::future_status::ready)
         return;
 
+    if (pathfind_from_orbit && position != orbital_start_pos)
+    {
+        pathfinding_state = PathfindingState::Waiting;
+        return;
+    }
+
     planned_accelerations = pathfinder_return.get();
 
     if (planned_accelerations.size() == 0)
@@ -102,11 +108,50 @@ void ShipGameObject::check_pathfinding()
         pathfinding_state = PathfindingState::PathFound;
 }
 
+bool ShipGameObject::is_in_orbit()
+{
+    for (Planetoid* p : *planets)
+    {
+        int goldilocks = p->get_gravity_at_point(position).distance(Hex());
+        // can't be in orbit if we're not close enough
+        if (p->position.distance(position) != goldilocks) continue;
+        // can't be in orbit if we're not in an appropriate hex
+        bool in_cardinal_hex = false;
+        int i=0;
+        for (Hex h : CARDINAL_DIRECTIONS)
+        {
+            if (position - p->position == h*goldilocks)
+            {
+                in_cardinal_hex = true;
+                break;
+            }
+            i++;
+        }
+        if (!in_cardinal_hex) continue;
+        // can't be in orbit if our velocity is not correct
+        int j = (i != 0) ? i-1 : 5;
+        i = (i+1)%6;
+        Hex local_next_pos = velocity+position-p->position;
+        Hex clockwise_next_pos = CARDINAL_DIRECTIONS[i];
+        clockwise_next_pos *= goldilocks;
+        Hex counterclockwise_next_pos = CARDINAL_DIRECTIONS[j];
+        counterclockwise_next_pos *= goldilocks;
+        if (local_next_pos == clockwise_next_pos || local_next_pos == counterclockwise_next_pos)
+            return true;
+    }
+    return false;
+}
+
 void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
 {
     if (pathfinding_state != PathfindingState::None) return;
-    // TODO pathfinding from orbit
-    if (velocity != Hex()) return;
+    if (is_in_orbit())
+    {
+        pathfind_from_orbit = true;
+        orbital_start_pos = position;
+    }
+    else if (velocity != Hex()) 
+        return;
     std::vector<PlanetoidGameObject*>* planets_local = new std::vector<PlanetoidGameObject*>();
     for (Planetoid* p: *planets)
         planets_local->push_back(new PlanetoidGameObject(p));

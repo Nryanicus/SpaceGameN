@@ -5,14 +5,9 @@ pathfinding can find orbits in size 3 planets
 can keep orbit at ring +-1 for 2 burns/turn (12 per orbit)
 
 pathfinding
-    have pathfinder in orbit wait until starting position is correct before accelerating
     taking off and landing
 
 UI
-    have each step in ship's planned future show, one after another
-
-    have text for pathfinding state, AWAITING, CALCING, NO FOUND, EXECUTING. Have pathfinder auto reject any attempts to enter orbits of planetoids class 3 and greater (unless I come up with a better heuristic)
-    
     NCIS "enhance" sort of thing for zooming? Like you select a rectangle then it stutters forwards?
 
     F1 rules encylopedia. hyperlinks, info on buildings/ships/upgrades available only after the first one is built, otherwise just a blank page. Could work into console idea

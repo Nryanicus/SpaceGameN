@@ -11,10 +11,13 @@
 
 const std::chrono::milliseconds NO_TIME(0);
 
-enum class PathfindingState {None, Computing, PathFound, PathNotFound};
+enum class PathfindingState {None, Computing, PathFound, PathNotFound, Waiting};
 
 class ShipGameObject
 {
+private:
+    void check_pathfinding();
+    bool is_in_orbit();
 public:
     // game state
     Hex acceleration;
@@ -33,6 +36,8 @@ public:
     bool reset_position_preview;
 
     // AI
+    bool pathfind_from_orbit;
+    Hex orbital_start_pos;
     PathfindingState pathfinding_state;
     std::future<std::deque<Hex>> pathfinder_return;
     std::deque<Hex> planned_accelerations;
@@ -44,8 +49,6 @@ public:
     void accelerate(int mag);
 
     void pathfind_to(Hex goal_pos, Hex goal_vel);
-
-    void check_pathfinding();
 };
 
 #endif

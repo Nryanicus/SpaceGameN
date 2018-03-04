@@ -192,6 +192,8 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
     }
     if (ship->pathfinding_state == PathfindingState::Computing)
         set_display_text("Computing", COMPUTING_COLOUR, true);
+    if (ship->pathfinding_state == PathfindingState::Waiting)
+        set_display_text("Waiting", COMPUTING_COLOUR, true);
     if (display_text)
     {
         target->draw(text);
@@ -212,7 +214,6 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
     elapsed_time_path += dt;
     if (elapsed_time_path > PATH_ANIMATE_TIME)
         elapsed_time_path = 0;
-
 
     update_plumes(dt);
 }
@@ -258,7 +259,7 @@ void ShipRenderer::update_plumes(double dt)
 
 void ShipRenderer::take_path_input(Hex h)
 {
-    if (ship->pathfinding_state == PathfindingState::Computing) return;
+    if (ship->pathfinding_state != PathfindingState::None) return;
     if (pathfinding_ui_state == PathfindUIState::Awaiting)
     {
         goal_position = h;
