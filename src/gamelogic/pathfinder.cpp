@@ -88,7 +88,7 @@ int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration go
     return dpos; 
 }
 
-std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<Planetoid*>* planetoids, int max_acceleration)
+std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<PlanetoidGameObject*>* planetoids, int max_acceleration)
 {
     std::vector<PositionVelocityAcceleration> ns;
     
@@ -96,11 +96,11 @@ std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleratio
     Hex new_pos = node.position + new_vel;
     
     // apply gravity to our vector
-    for (Planetoid* p: *planetoids)
+    for (PlanetoidGameObject* p: *planetoids)
         new_vel += p->get_gravity_at_point(new_pos);
 
     // do not give vectors which will result in collisions
-    for (Planetoid* p: *planetoids)
+    for (PlanetoidGameObject* p: *planetoids)
         if (p->collision_in_path(node.position, new_pos))
             return ns;
 
@@ -119,13 +119,14 @@ void insert(std::deque<PositionVelocityAccelerationValue>* frontier, PositionVel
     frontier->insert(it, value);
 }
 
-std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<Planetoid*>* planetoids)
+std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<PlanetoidGameObject*>* planetoids)
 {
     assert(max_acceleration > 0);
     // set up initial variables
 
     // use beam search if goal is distant
-    bool beam_search = start_pos.distance(goal_pos) + start_vel.distance(goal_vel) > BEAM_SEARCH_CUTOFF;
+    // bool beam_search = start_pos.distance(goal_pos) + start_vel.distance(goal_vel) > BEAM_SEARCH_CUTOFF;
+    bool beam_search = true;
 
     PositionVelocityAcceleration start(start_pos, start_vel, Hex());
     PositionVelocityAcceleration goal(goal_pos, goal_vel, Hex());
@@ -180,6 +181,12 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
             std::cout << "goal found in " << nodes_searched << " steps, with " << nodes_pruned << " nodes pruned, fuel cost: " << fuel_cost << std::endl;
             if (beam_search)
                 std::cout << "using beam search" << std::endl;
+
+            // delete unneeded data
+            for (PlanetoidGameObject* p: *planetoids)
+                delete p;
+            delete planetoids;
+
             return acceleration_path;
         }
 

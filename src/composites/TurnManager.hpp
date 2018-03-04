@@ -11,7 +11,7 @@ const double CLOCK_SEGMENTS = 32;
 const double CLOCK_RADIUS = 0.1;
 const sf::Color CLOCK_COLOUR(255, 255, 255, 255);
 
-const Vector CLOCK_POS(0.9,-0.9);
+const Vector CLOCK_POS(0.9,-0.85);
 const Vector CLOCK_SCALE(-((double)HEIGHT)/((double)WIDTH),-1.0);
 
 class TurnManager

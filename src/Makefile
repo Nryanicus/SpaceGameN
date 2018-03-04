@@ -1,8 +1,8 @@
 # export all variables, for the Makefiles we'll call in sub directories
 export
 CC = g++
-CC_FLAGS = -Og -std=c++11 -Wall -I$(CURDIR)
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+CC_FLAGS = -O3 -std=c++11 -Wall -I$(CURDIR)
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lpthread
 
 # File names
 EXEC = main

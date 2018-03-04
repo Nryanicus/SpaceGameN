@@ -4,7 +4,8 @@ ShipGameObject::ShipGameObject(Hex pos, std::vector<Planetoid*>* planets)
 : position(pos), velocity(Hex(0,0)),
   planets(planets), 
   landed(false), taking_off(false), landed_planetoid(NULL), landed_location(-1),
-  reset_position_preview(false), accelerating(-1)
+  reset_position_preview(false), accelerating(-1),
+  is_pathfinding(false)
 {}
 
 void ShipGameObject::update()
@@ -66,6 +67,9 @@ void ShipGameObject::update()
     for (Planetoid* p : *planets)
         velocity += p->get_gravity_at_point(position);
 
+    // do pathfinding
+    check_pathfinding();
+
     if (planned_accelerations.size() != 0)
     {
         velocity += planned_accelerations.front();
@@ -80,21 +84,36 @@ void ShipGameObject::update()
         accelerating = -1;
 }
 
-void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
+void ShipGameObject::check_pathfinding()
 {
-    planned_accelerations = pathfind(position, velocity, goal_pos, goal_vel, 1, planets);
+    if (!pathfinder_return.valid())
+    {
+        std::cout << "not pathfinding" << std::endl;
+        return;
+    }
+    if (pathfinder_return.wait_for(NO_TIME) != std::future_status::ready)
+    {
+        std::cout << "still looking" << std::endl;
+        return;
+    }
+
+    planned_accelerations = pathfinder_return.get();
+
     if (planned_accelerations.size() == 0)
         std::cout << "failed to find path" << std::endl;
-    else
-    {
-        velocity += planned_accelerations.front();
-        if (planned_accelerations.front() != Hex())
-            accelerating = dirc_to_index(planned_accelerations.front());
-        else
-            accelerating = -1;
-        planned_accelerations.pop_front();
-        // std::cout << "state: " << position << " " << velocity << std::endl;
-    }
+
+    is_pathfinding = false;
+}
+
+void ShipGameObject::pathfind_to(Hex goal_pos, Hex goal_vel)
+{
+    if (is_pathfinding) return;
+    std::vector<PlanetoidGameObject*>* planets_local = new std::vector<PlanetoidGameObject*>();
+    for (Planetoid* p: *planets)
+        planets_local->push_back(new PlanetoidGameObject(p));
+    pathfinder_return = std::async(std::launch::async, pathfind, position, velocity, goal_pos, goal_vel, 1, planets_local);
+    is_pathfinding = true;
+    std::cout << "pathfinding to " << goal_pos << " " << goal_vel << std::endl;
 }
 
 void ShipGameObject::rotate(int dirc)

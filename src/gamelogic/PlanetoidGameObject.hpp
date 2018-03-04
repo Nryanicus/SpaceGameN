@@ -35,6 +35,7 @@ public:
     std::vector<int> subterranean_resources;
 
     PlanetoidGameObject(int size, Hex position, std::string name);
+    PlanetoidGameObject(PlanetoidGameObject* other);
 
     int find_landing_location(Hex pos, Hex prev_pos);
     Hex get_landed_ship_position(int landing_location);

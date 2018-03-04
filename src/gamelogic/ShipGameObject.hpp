@@ -2,9 +2,14 @@
 #define shipgameobject_hpp
 
 #include <SFML/Graphics.hpp>
+#include <future>
+#include <chrono>
+#include "PlanetoidGameObject.hpp"
 #include "pathfinder.hpp"
 #include "utilities/Hex.hpp"
 #include "composites/Planetoid.hpp"
+
+const std::chrono::milliseconds NO_TIME(1);
 
 class ShipGameObject
 {
@@ -26,6 +31,8 @@ public:
     int accelerating;
 
     // AI
+    bool is_pathfinding;
+    std::future<std::deque<Hex>> pathfinder_return;
     std::deque<Hex> planned_accelerations;
 
     ShipGameObject(Hex pos, std::vector<Planetoid*>* planets);
@@ -35,6 +42,8 @@ public:
     void accelerate(int mag);
 
     void pathfind_to(Hex goal_pos, Hex goal_vel);
+
+    void check_pathfinding();
 };
 
 #endif

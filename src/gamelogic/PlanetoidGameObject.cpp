@@ -96,6 +96,18 @@ PlanetoidGameObject::PlanetoidGameObject(int size, Hex position, std::string nam
                 subterranean_resources[i] = FUNDAMENTIUM;
 }
 
+PlanetoidGameObject::PlanetoidGameObject(PlanetoidGameObject* other)
+: name(other->name),
+  rotation(other->rotation), num_sides(other->num_sides), size(other->size), mass(other->mass),
+  has_atmosphere(other->has_atmosphere), has_ocean(other->has_ocean),
+  position(other->position),
+  atmosphere_collision(other->atmosphere_collision), collision(other->collision),
+  surface(other->surface), elevations(other->elevations),
+  ocean_present(other->ocean_present), 
+  surface_resources(other->surface_resources), subterranean_resources(other->subterranean_resources)
+{}
+
+
 int PlanetoidGameObject::find_landing_location(Hex pos, Hex prev_pos)
 {
     if (pos.distance(prev_pos) > 1) return -1;
