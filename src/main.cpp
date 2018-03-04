@@ -136,6 +136,19 @@ int main(int argc, char* argv[])
                         ship.accelerate(1);
                     if (event.key.code == sf::Keyboard::Down)
                         ship.accelerate(-1);
+                    if (event.key.code == sf::Keyboard::Subtract)
+                    {
+                        if (ship.PATH_ANIMATE_TIME > 2)
+                        {
+                            ship.PATH_ANIMATE_TIME -= 0.5;
+                            turn_manager.TOTAL_TURN_TIME -= 0.5;
+                        }
+                    }
+                    if (event.key.code == sf::Keyboard::Add)
+                    {
+                        ship.PATH_ANIMATE_TIME += 0.5;
+                        turn_manager.TOTAL_TURN_TIME += 0.5;
+                    }
                     if (event.key.code == sf::Keyboard::C)
                         hex_nums = !hex_nums;
                     if (event.key.code == sf::Keyboard::X)

@@ -19,10 +19,10 @@ class TurnManager
 private:
     AnimationManager animation_manager;
     double turn_timer = 0;
-    double TOTAL_TURN_TIME = 2;
 
     sf::VertexArray clock_array;
 public:
+    double TOTAL_TURN_TIME = 2;
     bool paused;
     TurnManager(std::vector<AnimatedGameObject*> objects);
     void update(double dt);

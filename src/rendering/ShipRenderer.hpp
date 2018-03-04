@@ -16,8 +16,6 @@ const sf::Color DASHED_PLUME_COLOUR(255, 50, 50, 150);
 const double LANDED_SHIP_OFFSET = 17.37125;
 const double PLUME_ANIMATE_TIME = 0.25;
 const double BLINK_ANIMATE_TIME = 0.5;
-const double PATH_ANIMATE_TIME = 2;
-
 enum class PathfindUIState {Awaiting, NeedVelocity};
 
 class ShipRenderer : public Animated
@@ -47,6 +45,7 @@ private:
     Vector get_next_pos_rot(double* rot, bool* draw_burn);
 
 public:
+    double PATH_ANIMATE_TIME = 2;
     ShipRenderer(ShipGameObject* ship);
     void draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool debug=false);
     void take_path_input(Hex h);

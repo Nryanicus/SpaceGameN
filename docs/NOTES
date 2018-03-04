@@ -1,5 +1,9 @@
 rotation 0 is facing right
 
+pathfinding can find orbits in size 3 planets
+
+can keep orbit at ring +-1 for 2 burns/turn (12 per orbit)
+
 pathfinding
     have pathfinder in orbit wait until starting position is correct before accelerating
     taking off and landing

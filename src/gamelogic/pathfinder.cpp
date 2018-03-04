@@ -77,17 +77,18 @@ namespace std
 int graph_cost(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
     // fuel conservation
-    return node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());// + heuristic(node, goal);
+    // return node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());
+    return goal.acceleration.distance(Hex());
 }
 
 int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
     int dpos = node.position.distance(goal.position);
     // int dvel = node.velocity.distance(goal.velocity);
-    return dpos;// + dvel;
+    return dpos;
 }
 
-std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<PlanetoidGameObject*>* planetoids, int max_acceleration)
+std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleration node, std::vector<PlanetoidGameObject*>* planetoids, int acceleration)
 {
     std::vector<PositionVelocityAcceleration> ns;
     
@@ -106,9 +107,8 @@ std::vector<PositionVelocityAcceleration> neighbours(PositionVelocityAcceleratio
     // include case with no acceleration
     ns.push_back(PositionVelocityAcceleration(new_pos, new_vel, Hex()));
     // all possible acceleration cases
-    for (int a=1; a<=max_acceleration; a++)
-        for (Hex h: CARDINAL_DIRECTIONS)
-            ns.push_back(PositionVelocityAcceleration(new_pos, new_vel, h*a));
+    for (Hex h: CARDINAL_DIRECTIONS)
+        ns.push_back(PositionVelocityAcceleration(new_pos, new_vel, h*acceleration));
     return ns;
 }
 
@@ -118,9 +118,8 @@ void insert(std::deque<PositionVelocityAccelerationValue>* frontier, PositionVel
     frontier->insert(it, value);
 }
 
-std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int max_acceleration, std::vector<PlanetoidGameObject*>* planetoids)
+std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_vel, int acceleration, std::vector<PlanetoidGameObject*>* planetoids)
 {
-    assert(max_acceleration > 0);
     // set up initial variables
 
     // use beam search if goal is distant
@@ -190,7 +189,7 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
         }
 
         // update paths and add new nodes to frontier as appropriate
-        for (PositionVelocityAcceleration n: neighbours(current, planetoids, max_acceleration))
+        for (PositionVelocityAcceleration n: neighbours(current, planetoids, acceleration))
         {
             int new_cost = cost_so_far[current] + graph_cost(current, n);
             if (cost_so_far.count(n) == 0 || new_cost < cost_so_far[n])
