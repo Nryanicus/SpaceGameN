@@ -11,6 +11,8 @@
 
 const std::chrono::milliseconds NO_TIME(0);
 
+enum class PathfindingState {None, Computing, PathFound, PathNotFound};
+
 class ShipGameObject
 {
 public:
@@ -28,11 +30,10 @@ public:
     int landed_location;
 
     // flags for renderer
-    bool path_not_found;
     bool reset_position_preview;
 
     // AI
-    bool is_pathfinding;
+    PathfindingState pathfinding_state;
     std::future<std::deque<Hex>> pathfinder_return;
     std::deque<Hex> planned_accelerations;
 

@@ -4,8 +4,8 @@ ShipRenderer::ShipRenderer(ShipGameObject* ship)
 : Animated(),
   ship(ship),
   blink(false), elapsed_time_blink(0),
-  elapsed_time_plume(0),
-  pathfinding_state(PathfindUIState::Awaiting)
+  elapsed_time_plume(0), elapsed_time_path(0), elapsed_time_text(0),
+  pathfinding_ui_state(PathfindUIState::Awaiting), display_text(false)
 {
     ship_array.setPrimitiveType(sf::PrimitiveType::Lines);
     for (Vector v: MILITARY_SHIP)
@@ -20,6 +20,9 @@ ShipRenderer::ShipRenderer(ShipGameObject* ship)
 
     dashed_plume_array.setPrimitiveType(sf::PrimitiveType::Lines);
     dashed_plume_array.resize(8);
+
+    font.loadFromFile("../res/fonts/LiberationMono-Regular.ttf");
+    text = sf::Text("", font);
 }
 
 Vector ShipRenderer::get_next_pos_rot(double* rot, bool* draw_burn)
@@ -97,7 +100,7 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
         target->draw(plume_array, sf::RenderStates(trans));
 
     // draw pathfinding UI
-    if (pathfinding_state == PathfindUIState::NeedVelocity)
+    if (pathfinding_ui_state == PathfindUIState::NeedVelocity)
     {
         double bounce = 0.9 - 0.5*sin(elapsed_time_blink/BLINK_ANIMATE_TIME*pi);
 
@@ -177,6 +180,29 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
             target->draw(dashed_plume_array, sf::RenderStates(trans));
     }
 
+    if (ship->pathfinding_state == PathfindingState::PathNotFound)
+    {
+        ship->pathfinding_state = PathfindingState::None;
+        set_display_text("Path Not Found", PATH_NOT_FOUND_COLOUR);
+    }
+    if (ship->pathfinding_state == PathfindingState::PathFound)
+    {
+        ship->pathfinding_state = PathfindingState::None;
+        set_display_text("Path Found", PATH_FOUND_COLOUR);
+    }
+    if (ship->pathfinding_state == PathfindingState::Computing)
+        set_display_text("Computing", COMPUTING_COLOUR, true);
+    if (display_text)
+    {
+        target->draw(text);
+        elapsed_time_text += dt;
+        if (elapsed_time_text > TEXT_DISPLAY_TIME)
+        {
+            display_text = false;
+            elapsed_time_text = 0;
+        }
+    }
+
     elapsed_time_blink += dt;
     if (elapsed_time_blink > BLINK_ANIMATE_TIME)
     {
@@ -186,7 +212,24 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
     elapsed_time_path += dt;
     if (elapsed_time_path > PATH_ANIMATE_TIME)
         elapsed_time_path = 0;
+
+
     update_plumes(dt);
+}
+
+void ShipRenderer::set_display_text(std::string str, sf::Color col, bool keep_time_zero)
+{
+    text.setFillColor(col);
+
+    text.setCharacterSize(32);
+    text.setString(str);
+    text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+    Vector pos = axial_to_pixel(ship->position.q, ship->position.r) + TEXT_OFFSET;
+    text.setPosition(pos.to_sfml());
+
+    if (keep_time_zero)
+        elapsed_time_text = 0;
+    display_text = true;
 }
 
 void ShipRenderer::update_plumes(double dt)
@@ -215,15 +258,15 @@ void ShipRenderer::update_plumes(double dt)
 
 void ShipRenderer::take_path_input(Hex h)
 {
-    if (ship->is_pathfinding) return;
-    if (pathfinding_state == PathfindUIState::Awaiting)
+    if (ship->pathfinding_state == PathfindingState::Computing) return;
+    if (pathfinding_ui_state == PathfindUIState::Awaiting)
     {
         goal_position = h;
-        pathfinding_state = PathfindUIState::NeedVelocity;
+        pathfinding_ui_state = PathfindUIState::NeedVelocity;
     }
-    else if (pathfinding_state == PathfindUIState::NeedVelocity)
+    else if (pathfinding_ui_state == PathfindUIState::NeedVelocity)
     {
         ship->pathfind_to(goal_position, h-goal_position);
-        pathfinding_state = PathfindUIState::Awaiting;
+        pathfinding_ui_state = PathfindUIState::Awaiting;
     }
 }
