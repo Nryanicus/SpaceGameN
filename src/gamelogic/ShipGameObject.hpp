@@ -49,6 +49,8 @@ public:
     void accelerate(int mag);
 
     void pathfind_to(Hex goal_pos, Hex goal_vel);
+    void cancel_pathfinding();
+
 };
 
 #endif

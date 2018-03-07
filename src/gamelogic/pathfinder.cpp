@@ -78,7 +78,7 @@ int graph_cost(PositionVelocityAcceleration node, PositionVelocityAcceleration g
 {
     // fuel conservation
     // return node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());
-    return goal.acceleration.distance(Hex());
+    return 1+goal.acceleration.distance(Hex());
 }
 
 int heuristic(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
@@ -211,5 +211,6 @@ std::deque<Hex> pathfind(Hex start_pos, Hex start_vel, Hex goal_pos, Hex goal_ve
             }
     }
     // we failed to find a path
+    std::cout << "goal not found in " << nodes_searched << " steps, with " << nodes_pruned << " nodes pruned" << std::endl;
     return std::deque<Hex>();
 }

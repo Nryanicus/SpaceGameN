@@ -91,21 +91,27 @@ void ShipGameObject::update()
 
 void ShipGameObject::check_pathfinding()
 {
+    // check if we're pathfinding and if so if we've got a result yet
+    // otherwise return
     if (!pathfinder_return.valid() || pathfinder_return.wait_for(NO_TIME) != std::future_status::ready)
         return;
 
+    // check if we've found a solution but are in an incorrect orbital position
     if (pathfind_from_orbit && position != orbital_start_pos)
     {
         pathfinding_state = PathfindingState::Waiting;
         return;
     }
 
+    // we're ready to execute our found solution, or report we didn't find one
     planned_accelerations = pathfinder_return.get();
 
     if (planned_accelerations.size() == 0)
         pathfinding_state = PathfindingState::PathNotFound;
     else
         pathfinding_state = PathfindingState::PathFound;
+
+    pathfind_from_orbit = false;
 }
 
 bool ShipGameObject::is_in_orbit()
@@ -180,4 +186,10 @@ void ShipGameObject::accelerate(int mag)
         acceleration = rotate_hex(Hex(1, 0), rotation)*mag;
         velocity += acceleration;
     }
+}
+
+void ShipGameObject::cancel_pathfinding()
+{
+    pathfinding_state = PathfindingState::None;
+    planned_accelerations.clear();
 }

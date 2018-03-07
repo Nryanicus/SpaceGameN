@@ -25,6 +25,82 @@ ShipRenderer::ShipRenderer(ShipGameObject* ship)
     text = sf::Text("", font);
 }
 
+sf::Transform ShipRenderer::get_current_transform(bool* burn)
+{
+
+    double rot;
+    Vector pos = get_current_pos_rot(&rot, burn);
+
+    sf::Transform trans;
+    trans.translate(pos.to_sfml());
+    trans.rotate(rot);
+
+    return trans;
+}
+
+Vector ShipRenderer::get_interpolated_pos()
+{
+    double rot;
+    bool draw_burn;
+    Vector pos = get_current_pos_rot(&rot, &draw_burn);
+
+    double rot2;
+    bool draw_burn2;
+    Vector pos2 = get_next_pos_rot(&rot2, &draw_burn2);
+    double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
+    pos = (1-r)*pos + r*pos2;
+    return pos;
+}
+
+
+sf::Transform ShipRenderer::get_interpolated_transform(bool* burn)
+{
+
+    double rot;
+    bool draw_burn;
+    Vector pos = get_current_pos_rot(&rot, &draw_burn);
+
+    double rot2;
+    bool draw_burn2;
+    Vector pos2 = get_next_pos_rot(&rot2, &draw_burn2);
+    double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
+    pos = (1-r)*pos + r*pos2;
+
+    if (abs(rot2-rot) > 180)
+    {
+        if (rot2 > rot)
+            rot += 360;
+        else
+            rot2 += 360;
+    }
+    rot = rot + (rot2-rot)*r;
+
+    if (r <= 0.5)
+        *burn = draw_burn;
+    else
+        *burn = draw_burn2;
+
+    sf::Transform trans;
+    trans.translate(pos.to_sfml());
+    trans.rotate(rot);
+
+
+    return trans;
+}
+
+sf::Transform ShipRenderer::get_next_transform(bool* burn)
+{
+
+    double rot;
+    Vector pos = get_next_pos_rot(&rot, burn);
+
+    sf::Transform trans;
+    trans.translate(pos.to_sfml());
+    trans.rotate(rot);
+
+    return trans;
+}
+
 Vector ShipRenderer::get_next_pos_rot(double* rot, bool* draw_burn)
 {
     // show planned burn
@@ -69,32 +145,14 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
         ship->reset_position_preview = false;
     }
 
-    double rot;
-    bool draw_burn;
-    Vector pos = get_current_pos_rot(&rot, &draw_burn);
-    double current_rot = rot;
     // interpolate if we're animating
-    if (animation_state != AnimationState::None && !ship->landed)
-    {
-        double rot2;
-        bool draw_burn2;
-        Vector pos2 = get_next_pos_rot(&rot2, &draw_burn2);
-        double r = elapsed_time_animate/TOTAL_TIME_ANIMATE;
-        pos = (1-r)*pos + r*pos2;
-
-        if (abs(rot2-rot) > 180)
-        {
-            if (rot2 > rot)
-                rot += 360;
-            else
-                rot2 += 360;
-        }
-        rot = rot + (rot2-rot)*r;
-    }
-
     sf::Transform trans;
-    trans.translate(pos.to_sfml());
-    trans.rotate(rot);
+    bool draw_burn;
+    if (animation_state != AnimationState::None && !ship->landed)
+        trans = get_interpolated_transform(&draw_burn);
+    else
+        trans = get_current_transform(&draw_burn);
+
     target->draw(ship_array, sf::RenderStates(trans));
     if (draw_burn)
         target->draw(plume_array, sf::RenderStates(trans));
@@ -102,19 +160,26 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
     // draw pathfinding UI
     if (pathfinding_ui_state == PathfindUIState::NeedVelocity)
     {
+        double rot;
+        Vector pos;
+        if (ship->landed)
+            rot = ship->landed_planetoid->get_landing_position_angle(ship->landed_location, &pos, LANDED_SHIP_OFFSET);
+        else
+            rot = 60*ship->rotation;
+
         double bounce = 0.9 - 0.5*sin(elapsed_time_blink/BLINK_ANIMATE_TIME*pi);
 
         trans = sf::Transform();
         Vector goal_pos = axial_to_pixel(goal_position.q, goal_position.r);
         trans.translate(goal_pos.to_sfml());
-        trans.rotate(current_rot);
+        trans.rotate(rot);
         trans.scale(bounce, bounce);
         target->draw(ship_array, sf::RenderStates(trans));
 
         trans = sf::Transform();
         Vector mouse_pos = axial_to_pixel(mouse_hex.q, mouse_hex.r);
         trans.translate(mouse_pos.to_sfml());
-        trans.rotate(current_rot);
+        trans.rotate(rot);
         trans.scale(bounce, bounce);
         target->draw(dashed_ship_array, sf::RenderStates(trans));
     }
@@ -153,7 +218,7 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
         int draw_index = ceil( ((double) future_pos.size())*elapsed_time_path/PATH_ANIMATE_TIME ) -1;
         draw_index = draw_index<0 ? 0 : draw_index;
         trans = sf::Transform();
-        pos = axial_to_pixel(future_pos[draw_index].q, future_pos[draw_index].r);
+        Vector pos = axial_to_pixel(future_pos[draw_index].q, future_pos[draw_index].r);
         trans.translate(pos.to_sfml());
         trans.rotate(future_rot[draw_index]*60);
         target->draw(dashed_ship_array, sf::RenderStates(trans));
@@ -168,11 +233,7 @@ void ShipRenderer::draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool
             for (Hex movement_hex: (ship->position+ship->velocity).all_hexes_between(ship->position))
                 movement_hex.draw(target, true, sf::Color(50, 255, 50, 100));
         
-        pos = get_next_pos_rot(&rot, &draw_burn);
-
-        trans = sf::Transform();
-        trans.translate(pos.to_sfml());
-        trans.rotate(rot);
+        trans = get_next_transform(&draw_burn);
         double bounce = 1.25 - 0.25*sin(elapsed_time_blink/BLINK_ANIMATE_TIME*pi);
         trans.scale(bounce, bounce);
         target->draw(dashed_ship_array, sf::RenderStates(trans));
@@ -225,7 +286,7 @@ void ShipRenderer::set_display_text(std::string str, sf::Color col, bool keep_ti
     text.setCharacterSize(32);
     text.setString(str);
     text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
-    Vector pos = axial_to_pixel(ship->position.q, ship->position.r) + TEXT_OFFSET;
+    Vector pos = get_interpolated_pos() + TEXT_OFFSET;
     text.setPosition(pos.to_sfml());
 
     if (keep_time_zero)

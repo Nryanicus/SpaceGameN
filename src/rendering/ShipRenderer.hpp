@@ -52,10 +52,16 @@ private:
 
     void update_plumes(double dt);
 
+    // helpers
+    Vector get_interpolated_pos();
     Vector get_current_pos_rot(double* rot, bool* draw_burn);
     Vector get_next_pos_rot(double* rot, bool* draw_burn);
 
     void set_display_text(std::string str, sf::Color col, bool keep_time_zero=false);
+
+    sf::Transform get_next_transform(bool* burn);
+    sf::Transform get_current_transform(bool* burn);
+    sf::Transform get_interpolated_transform(bool* burn);
 
 public:
     double PATH_ANIMATE_TIME = 2;

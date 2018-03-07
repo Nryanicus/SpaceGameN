@@ -168,7 +168,12 @@ int main(int argc, char* argv[])
                     if (event.key.code == sf::Keyboard::Space)
                         turn_manager.paused = !turn_manager.paused;
                     if (event.key.code == sf::Keyboard::Q)
-                        ship.velocity *= 0;
+                    {
+                        if (ship.planned_accelerations.size() > 0)
+                            ship.cancel_pathfinding();
+                        else
+                            ship.velocity *= 0;
+                    }
                     if (event.key.code == sf::Keyboard::V)
                         draw_gravity = !draw_gravity;
                 }
