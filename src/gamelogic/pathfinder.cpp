@@ -73,11 +73,9 @@ namespace std
     };
 }
 
-
 int graph_cost(PositionVelocityAcceleration node, PositionVelocityAcceleration goal)
 {
-    // fuel conservation
-    // return node.acceleration.distance(Hex()) + goal.acceleration.distance(Hex());
+    // fuel conservation (calcs faster)
     return 1+goal.acceleration.distance(Hex());
 }
 

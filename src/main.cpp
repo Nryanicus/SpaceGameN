@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
                         ship.accelerate(-1);
                     if (event.key.code == sf::Keyboard::Subtract)
                     {
-                        if (ship.PATH_ANIMATE_TIME > 2)
+                        if (ship.PATH_ANIMATE_TIME > 1)
                         {
                             ship.PATH_ANIMATE_TIME -= 0.5;
                             turn_manager.TOTAL_TURN_TIME -= 0.5;

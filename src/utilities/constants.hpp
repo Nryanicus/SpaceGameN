@@ -30,8 +30,10 @@ const double HEX_SIZE = 100;
 const double HEX_HEIGHT = 2*HEX_SIZE;
 const double HEX_WIDTH = SQRT3*HEX_HEIGHT/2;
 
-const int WIDTH = 1920;
-const int HEIGHT = 1080;
+// const int WIDTH = 1920;
+// const int HEIGHT = 1080;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 
 const int GAUSS_PASSES = 1;
 
