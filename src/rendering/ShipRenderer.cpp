@@ -332,3 +332,8 @@ void ShipRenderer::take_path_input(Hex h)
         pathfinding_ui_state = PathfindUIState::Awaiting;
     }
 }
+
+void ShipRenderer::clear_path_input()
+{
+    pathfinding_ui_state = PathfindUIState::Awaiting;
+}

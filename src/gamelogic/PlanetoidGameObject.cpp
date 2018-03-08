@@ -19,19 +19,6 @@ PlanetoidGameObject::PlanetoidGameObject(int size, Hex position, std::string nam
     // determine which hexes we're occupying
     collision = spiral_hex_ring(Hex(0, 0), size-1);
     surface = hex_ring(Hex(0,0), size);
-    atmosphere_collision = hex_ring(Hex(0,0), size+1);
-
-    std::vector<Hex> additional_collisions = hex_ring(Hex(0,0), size);
-    for (int i=0; i<6; i++)
-    {
-        Hex h = index_to_dirc(i)*size;
-        additional_collisions.erase(std::remove(additional_collisions.begin(), additional_collisions.end(), h), additional_collisions.end());
-        atmosphere_collision.push_back(h);
-    }
-    collision.insert(collision.end(), additional_collisions.begin(), additional_collisions.end());
-
-    if (!has_atmosphere)
-        atmosphere_collision.clear();
 
     // set elevation variations
     for (int i=0; i<num_sides; i++)
@@ -101,9 +88,8 @@ PlanetoidGameObject::PlanetoidGameObject(PlanetoidGameObject* other)
   rotation(other->rotation), num_sides(other->num_sides), size(other->size), mass(other->mass),
   has_atmosphere(other->has_atmosphere), has_ocean(other->has_ocean),
   position(other->position),
-  atmosphere_collision(other->atmosphere_collision), collision(other->collision),
-  surface(other->surface), elevations(other->elevations),
-  ocean_present(other->ocean_present), 
+  collision(other->collision), surface(other->surface), 
+  elevations(other->elevations), ocean_present(other->ocean_present), 
   surface_resources(other->surface_resources), subterranean_resources(other->subterranean_resources)
 {}
 

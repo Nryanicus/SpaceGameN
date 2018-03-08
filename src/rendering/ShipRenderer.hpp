@@ -68,6 +68,7 @@ public:
     ShipRenderer(ShipGameObject* ship);
     void draw(sf::RenderTarget* target, double dt, Hex mouse_hex, bool debug=false);
     void take_path_input(Hex h);
+    void clear_path_input();
 };
 
 #endif

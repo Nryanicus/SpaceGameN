@@ -25,7 +25,7 @@ PlanetoidRenderer::PlanetoidRenderer(PlanetoidGameObject* planetoid)
   planetoid(planetoid)
 {
     double radius = get_radius(planetoid->size) - ELEVATION_QUANTUM;
-    double atmo_radius = get_radius(planetoid->size+1);//+0.5;
+    double atmo_radius = get_radius(planetoid->size+1)-0.75;
     double ocean_radius = 0;
 
     if (planetoid->has_ocean)
@@ -252,9 +252,6 @@ void PlanetoidRenderer::draw(sf::RenderTarget* target, double dt, bool gravity, 
             (h+planetoid->position).draw(target, true, sf::Color(255,20,20,50));
         for (Hex h: planetoid->surface)
             (h+planetoid->position).draw(target, false, sf::Color(20,20,255,200));
-        if (planetoid->has_atmosphere)
-            for (Hex h: planetoid->atmosphere_collision)
-                (h+planetoid->position).draw(target, false, sf::Color(20,255,20,200));
     }
 
     // atmo

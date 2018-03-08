@@ -23,8 +23,6 @@ public:
     bool has_atmosphere, has_ocean;
     int ocean_level;
     Hex position;
-    // unordered list of hexes considered to be areabrake areas for spacecraft
-    std::vector<Hex> atmosphere_collision;
     // unordered list of hexes considered to be collision areas for spacecraft
     std::vector<Hex> collision;
     // ordered list of surface hexes, clockwise from rightmost at rotation=0

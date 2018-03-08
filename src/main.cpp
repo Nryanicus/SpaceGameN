@@ -177,7 +177,8 @@ int main(int argc, char* argv[])
                     if (event.key.code == sf::Keyboard::V)
                         draw_gravity = !draw_gravity;
                 }
-                if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
+                if (event.type == sf::Event::MouseButtonPressed)
+                {
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
                         window_dummy.setView(view);
@@ -185,6 +186,9 @@ int main(int argc, char* argv[])
                         Hex h = Hex(pixel_to_axial(mouse_pos.x, mouse_pos.y));
                         ship.take_path_input(h);
                     }
+                    if (event.mouseButton.button == sf::Mouse::Right)
+                        ship.clear_path_input();
+                }
             }
         }
 
