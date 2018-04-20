@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     //          SFML boilerplate          //
     ////////////////////////////////////////
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 4;
+    settings.antialiasingLevel = 0;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "HIDE(N)", sf::Style::Default, settings);
     window.setFramerateLimit(60);
 
